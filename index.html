@@ -29,25 +29,6 @@
           </div>
         </div>
 
-        <nav class="main-nav">
-          <button class="nav-btn active" data-tab="dashboard">
-            <i class="fa-solid fa-house"></i>
-            <span>Главная</span>
-          </button>
-          <button class="nav-btn" data-tab="templates">
-            <i class="fa-solid fa-utensils"></i>
-            <span>Шаблоны</span>
-          </button>
-          <button class="nav-btn" data-tab="weight">
-            <i class="fa-solid fa-weight-scale"></i>
-            <span>Вес</span>
-          </button>
-          <button class="nav-btn" data-tab="calendar">
-            <i class="fa-solid fa-calendar-days"></i>
-            <span>Календарь & Статистика</span>
-          </button>
-        </nav>
-
         <div class="header-actions">
           <button id="themeToggleBtn" class="icon-btn" title="Переключить тему">
             <i class="fa-solid fa-moon"></i>
@@ -56,7 +37,7 @@
             <i class="fa-solid fa-bullseye"></i>
             <span>Цели</span>
           </button>
-          <button id="backupBtn" class="btn btn-outline btn-sm" title="Резервное копирование">
+          <button id="backupBtn" class="icon-btn" title="Резервное копирование">
             <i class="fa-solid fa-database"></i>
           </button>
         </div>
@@ -66,9 +47,9 @@
     <!-- Main Container Content -->
     <main class="app-body">
       
-      <!-- TAB 1: DASHBOARD (ГЛАВНАЯ) -->
+      <!-- TAB 1: DASHBOARD (ГЛАВНАЯ / ДНЕВНИК) -->
       <section id="tab-dashboard" class="tab-page active">
-        <!-- Date Header & Controls -->
+        <!-- Compact Date Bar -->
         <div class="date-bar card">
           <button id="prevDateBtn" class="icon-btn-circle" title="Предыдущий день"><i class="fa-solid fa-chevron-left"></i></button>
           <div class="date-display-wrapper">
@@ -82,82 +63,62 @@
           <button id="todayBtn" class="btn btn-ghost btn-sm">Сегодня</button>
         </div>
 
-        <!-- KBJU Gauges / Progress Section -->
-        <div class="kbju-summary-grid">
-          <!-- Main Calories Card -->
-          <div class="kbju-card calories-card card">
-            <div class="card-header-compact">
-              <div class="macro-label">
-                <i class="fa-solid fa-fire macro-icon calories-color"></i>
-                <span>Калории</span>
-              </div>
-              <span id="caloriesTarget" class="target-val">Цель: 2000 ккал</span>
+        <!-- Unified KBJU Summary Card (Сводка в стиле приложения) -->
+        <div class="summary-app-card card">
+          <div class="summary-card-header">
+            <h3>Сводка за день</h3>
+            <span id="caloriesTarget" class="target-val">Цель: 2000 ккал</span>
+          </div>
+
+          <div class="calories-main-box">
+            <div class="calories-num-group">
+              <span id="caloriesCurrent" class="calories-big-num">0</span>
+              <span class="unit">ккал съедено</span>
             </div>
-            <div class="gauge-wrapper">
-              <div class="calories-numbers">
-                <span id="caloriesCurrent" class="current-val">0</span>
-                <span class="unit">ккал</span>
-              </div>
-              <div class="calories-subtext">
-                <span id="caloriesStatus">Осталось: 2000 ккал</span>
-              </div>
-            </div>
-            <div class="progress-bar-container">
+            <div id="caloriesStatus" class="calories-sub-status">Осталось: 2000 ккал</div>
+
+            <div class="progress-bar-container calories-main-bar">
               <div id="caloriesBar" class="progress-bar-fill calories-bar" style="width: 0%"></div>
             </div>
           </div>
 
-          <!-- Protein Card -->
-          <div class="kbju-card macro-card card">
-            <div class="card-header-compact">
-              <div class="macro-label">
-                <i class="fa-solid fa-drumstick-bite macro-icon protein-color"></i>
-                <span>Белки</span>
+          <hr class="summary-divider">
+
+          <div class="macro-breakdown-grid">
+            <!-- Protein -->
+            <div class="macro-mini-item">
+              <div class="macro-mini-header">
+                <span class="macro-mini-name protein-color"><i class="fa-solid fa-drumstick-bite"></i> Белки</span>
+                <span class="macro-mini-vals"><span id="proteinCurrent">0</span> / <span id="proteinTarget">130</span>г</span>
               </div>
-              <span id="proteinTarget" class="target-val">130г</span>
-            </div>
-            <div class="macro-stats">
-              <div class="macro-main-num">
-                <span id="proteinCurrent">0</span><span class="unit">г</span>
+              <div class="progress-bar-container mini-bar">
+                <div id="proteinBar" class="progress-bar-fill protein-bar" style="width: 0%"></div>
               </div>
-              <span id="proteinPercent" class="percent-badge">0%</span>
             </div>
-            <div class="progress-bar-container">
-              <div id="proteinBar" class="progress-bar-fill protein-bar" style="width: 0%"></div>
+
+            <!-- Fat -->
+            <div class="macro-mini-item">
+              <div class="macro-mini-header">
+                <span class="macro-mini-name fat-color"><i class="fa-solid fa-droplet"></i> Жиры</span>
+                <span class="macro-mini-vals"><span id="fatCurrent">0</span> / <span id="fatTarget">65</span>г</span>
+              </div>
+              <div class="progress-bar-container mini-bar">
+                <div id="fatBar" class="progress-bar-fill fat-bar" style="width: 0%"></div>
+              </div>
+            </div>
+
+            <!-- Carbs -->
+            <div class="macro-mini-item">
+              <div class="macro-mini-header">
+                <span class="macro-mini-name carbs-color"><i class="fa-solid fa-wheat-awn"></i> Углеводы</span>
+                <span class="macro-mini-vals"><span id="carbsCurrent">0</span> / <span id="carbsTarget">220</span>г</span>
+              </div>
+              <div class="progress-bar-container mini-bar">
+                <div id="carbsBar" class="progress-bar-fill carbs-bar" style="width: 0%"></div>
+              </div>
             </div>
           </div>
-
-          <!-- Fat Card -->
-          <div class="kbju-card macro-card card">
-            <div class="card-header-compact">
-              <div class="macro-label">
-                <i class="fa-solid fa-droplet macro-icon fat-color"></i>
-                <span>Жиры</span>
-              </div>
-              <span id="fatTarget" class="target-val">65г</span>
-            </div>
-            <div class="macro-stats">
-              <div class="macro-main-num">
-                <span id="fatCurrent">0</span><span class="unit">г</span>
-              </div>
-              <span id="fatPercent" class="percent-badge">0%</span>
-            </div>
-            <div class="progress-bar-container">
-              <div id="fatBar" class="progress-bar-fill fat-bar" style="width: 0%"></div>
-            </div>
-          </div>
-
-          <!-- Carbs Card -->
-          <div class="kbju-card macro-card card">
-            <div class="card-header-compact">
-              <div class="macro-label">
-                <i class="fa-solid fa-wheat-awn macro-icon carbs-color"></i>
-                <span>Углеводы</span>
-              </div>
-              <span id="carbsTarget" class="target-val">220г</span>
-            </div>
-            <div class="macro-stats">
-              <div class="macro-main-num">
+        </div>
                 <span id="carbsCurrent">0</span><span class="unit">г</span>
               </div>
               <span id="carbsPercent" class="percent-badge">0%</span>
@@ -706,6 +667,26 @@
 
   <!-- Toast Notification Container -->
   <div id="toastContainer" class="toast-container"></div>
+
+  <!-- Fixed Bottom App Navigation Bar -->
+  <nav class="bottom-app-nav">
+    <button class="nav-btn active" data-tab="dashboard">
+      <i class="fa-solid fa-book-open"></i>
+      <span>Дневник</span>
+    </button>
+    <button class="nav-btn" data-tab="templates">
+      <i class="fa-solid fa-utensils"></i>
+      <span>Шаблоны</span>
+    </button>
+    <button class="nav-btn" data-tab="weight">
+      <i class="fa-solid fa-weight-scale"></i>
+      <span>Вес</span>
+    </button>
+    <button class="nav-btn" data-tab="calendar">
+      <i class="fa-solid fa-chart-line"></i>
+      <span>Статистика</span>
+    </button>
+  </nav>
 
   <!-- JavaScript App Logic -->
   <script src="js/app.js"></script>

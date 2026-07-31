@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=5.0">
+  <link rel="stylesheet" href="css/styles.css?v=6.0">
 </head>
 <body>
   <div id="app" class="app-container">
@@ -574,14 +574,18 @@
         <button class="modal-close-btn" data-close-modal="jsonImportModal"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <div class="modal-body">
-        <p class="modal-desc">Вставьте несколько шаблонов в формате JSON в текстовое поле. Нажмите &lt;Загрузить пример JSON&gt; для просмотра структуры.</p>
+        <p class="modal-desc">Выберите `.json` файл с устройства или вставьте шаблоны вручную в текстовое поле ниже.</p>
 
-        <div class="json-tools-bar">
+        <div class="json-tools-bar" style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem; align-items: center;">
+          <input type="file" id="templateJsonFileInput" accept=".json,application/json" style="position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none;">
+          <label for="templateJsonFileInput" class="btn btn-primary btn-sm" style="cursor: pointer; display: inline-flex; align-items: center; gap: 0.4rem;">
+            <i class="fa-solid fa-file-arrow-up"></i> Выбрать .json файл
+          </label>
           <button id="insertSampleJsonBtn" class="btn btn-ghost btn-sm">
-            <i class="fa-solid fa-code"></i> Загрузить пример JSON
+            <i class="fa-solid fa-code"></i> Пример JSON
           </button>
           <button id="copyJsonBtn" class="btn btn-ghost btn-sm">
-            <i class="fa-solid fa-copy"></i> Скопировать текущие шаблоны в JSON
+            <i class="fa-solid fa-copy"></i> Скопировать шаблоны
           </button>
         </div>
 
@@ -662,10 +666,10 @@
         <div class="backup-option">
           <h4>Импорт данных из бэкапа</h4>
           <p>Выберите файл резервной копии `.json` для восстановления данных.</p>
-          <input type="file" id="importBackupFileInput" accept=".json" class="hidden">
-          <button id="triggerImportFileBtn" class="btn btn-secondary btn-block">
-            <i class="fa-solid fa-upload"></i> Загрузить файл бэкапа
-          </button>
+          <input type="file" id="importBackupFileInput" accept=".json,application/json" style="position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none;">
+          <label for="importBackupFileInput" class="btn btn-secondary btn-block" style="cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+            <i class="fa-solid fa-upload"></i> Выбрать и загрузить файл бэкапа (.json)
+          </label>
         </div>
       </div>
     </div>
@@ -695,6 +699,6 @@
   </nav>
 
   <!-- JavaScript App Logic -->
-  <script src="js/app.js?v=5.0"></script>
+  <script src="js/app.js?v=6.0"></script>
 </body>
 </html>

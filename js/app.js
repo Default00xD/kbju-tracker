@@ -1653,7 +1653,7 @@ class CloudDatabaseService {
       if (this.syncKey && !document.hidden && !this.isPushing) {
         this.pullFromCloud(false);
       }
-    }, 4000);
+    }, 1000); // 1-second polling for instant screen updates
   }
 
   debouncedPushToCloud() {
@@ -1661,7 +1661,7 @@ class CloudDatabaseService {
     clearTimeout(this.pushDebounceTimer);
     this.pushDebounceTimer = setTimeout(() => {
       this.pushToCloud();
-    }, 1000);
+    }, 500); // 0.5s debounce for fast pushes
   }
 
   async pushToCloud() {

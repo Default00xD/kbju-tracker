@@ -317,6 +317,27 @@
           </div>
         </div>
 
+        <!-- Cloud Database Sync Card -->
+        <div class="card cloud-sync-card">
+          <div class="cloud-sync-header">
+            <div class="title-with-badge">
+              <h3><i class="fa-solid fa-cloud-arrow-up calories-color"></i> Облачная база данных (Cloud DB)</h3>
+              <span id="cloudSyncStatusBadge" class="sync-badge offline"><i class="fa-solid fa-circle"></i> Локально</span>
+            </div>
+          </div>
+          <p class="cloud-sync-desc">Введите ваш код доступа (например, <b>7788</b> или ник), чтобы записи сохранялись в Онлайн БД и автоматически синхронизировались между телефоном и ПК!</p>
+          
+          <div class="cloud-sync-form">
+            <input type="text" id="cloudSyncKeyInput" class="form-control" placeholder="Придумайте ваш код (например, 7788)">
+            <button id="connectCloudBtn" class="btn btn-primary">
+              <i class="fa-solid fa-plug"></i> Подключить БД
+            </button>
+            <button id="syncNowBtn" class="btn btn-outline" title="Синхронизировать сейчас">
+              <i class="fa-solid fa-rotate"></i>
+            </button>
+          </div>
+        </div>
+
         <div class="stats-summary-grid">
           <!-- 7-Day Average Card -->
           <div class="card stat-card">

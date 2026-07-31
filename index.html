@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=14.0">
+  <link rel="stylesheet" href="css/styles.css?v=15.0">
 </head>
 <body>
   <div id="app" class="app-container">
@@ -179,7 +179,7 @@
       <section id="tab-templates" class="tab-page">
         <div class="section-header-bar">
           <div class="section-title">
-            <h2>Шаблоны блюд</h2>
+            <!-- Header removed -->
             <p>Быстрый выбор готовых позиций и наборов</p>
           </div>
           <div class="section-actions">
@@ -217,7 +217,7 @@
       <section id="tab-weight" class="tab-page">
         <div class="section-header-bar">
           <div class="section-title">
-            <h2>Контроль веса</h2>
+            <!-- Header removed -->
             <p>Ежедневный учет массы тела с шагом 0.1 кг</p>
           </div>
         </div>
@@ -303,7 +303,7 @@
         <div class="card settings-toolbar-card">
           <div class="toolbar-header" style="display: flex; justify-content: space-between; align-items: center;">
             <h3><i class="fa-solid fa-gear"></i> Настройки приложения</h3>
-            <span class="app-version-badge" style="font-size: 0.85rem; color: var(--text-muted); background: var(--bg-hover); padding: 2px 8px; border-radius: 12px;">v14.0</span>
+            <span class="app-version-badge" style="font-size: 0.85rem; color: var(--text-muted); background: var(--bg-hover); padding: 2px 8px; border-radius: 12px;">v15.0</span>
           </div>
           <div class="toolbar-actions-grid">
             <button id="themeToggleBtn" class="btn btn-secondary">
@@ -329,7 +329,7 @@
           <p class="cloud-sync-desc">Введите ваш код доступа (например, <b>7788</b> или ник), чтобы записи сохранялись в Онлайн БД и автоматически синхронизировались между телефоном и ПК!</p>
           
           <div class="cloud-sync-form">
-            <input type="text" id="cloudSyncKeyInput" class="form-control" placeholder="Придумайте ваш код (например, 7788)">
+            <input type="text" id="cloudSyncKeyInput" class="form-control">
             <button id="connectCloudBtn" class="btn btn-primary">
               <i class="fa-solid fa-plug"></i> Подключить БД
             </button>
@@ -499,26 +499,26 @@
         <div id="modalTabCustomEntry" class="modal-tab-content">
           <div class="form-group">
             <label>Название блюда:</label>
-            <input type="text" id="customMealName" class="form-control" placeholder="Например, Овсянка с ягодами">
+            <input type="text" id="customMealName" class="form-control">
           </div>
           <div class="form-row-2">
             <div class="form-group">
               <label>Калории (ккал):</label>
-              <input type="number" id="customMealCal" class="form-control" min="0" placeholder="0">
+              <input type="number" id="customMealCal" class="form-control" min="0">
             </div>
             <div class="form-group">
               <label>Белки (г):</label>
-              <input type="number" id="customMealP" class="form-control" min="0" step="0.1" placeholder="0">
+              <input type="number" id="customMealP" class="form-control" min="0" step="0.1">
             </div>
           </div>
           <div class="form-row-2">
             <div class="form-group">
               <label>Жиры (г):</label>
-              <input type="number" id="customMealF" class="form-control" min="0" step="0.1" placeholder="0">
+              <input type="number" id="customMealF" class="form-control" min="0" step="0.1">
             </div>
             <div class="form-group">
               <label>Углеводы (г):</label>
-              <input type="number" id="customMealC" class="form-control" min="0" step="0.1" placeholder="0">
+              <input type="number" id="customMealC" class="form-control" min="0" step="0.1">
             </div>
           </div>
         </div>
@@ -542,7 +542,7 @@
         <input type="hidden" id="editTemplateId">
         <div class="form-group">
           <label>Название шаблона:</label>
-          <input type="text" id="tplNameInput" class="form-control" placeholder="Например, Куриное филе с рисом">
+          <input type="text" id="tplNameInput" class="form-control">
         </div>
         <div class="form-group">
           <label>Категория по умолчанию:</label>
@@ -556,21 +556,21 @@
         <div class="form-row-2">
           <div class="form-group">
             <label>Калории (ккал):</label>
-            <input type="number" id="tplCalInput" class="form-control" min="0" placeholder="350">
+            <input type="number" id="tplCalInput" class="form-control" min="0">
           </div>
           <div class="form-group">
             <label>Белки (г):</label>
-            <input type="number" id="tplPInput" class="form-control" min="0" step="0.1" placeholder="30">
+            <input type="number" id="tplPInput" class="form-control" min="0" step="0.1">
           </div>
         </div>
         <div class="form-row-2">
           <div class="form-group">
             <label>Жиры (г):</label>
-            <input type="number" id="tplFInput" class="form-control" min="0" step="0.1" placeholder="8">
+            <input type="number" id="tplFInput" class="form-control" min="0" step="0.1">
           </div>
           <div class="form-group">
             <label>Углеводы (г):</label>
-            <input type="number" id="tplCInput" class="form-control" min="0" step="0.1" placeholder="40">
+            <input type="number" id="tplCInput" class="form-control" min="0" step="0.1">
           </div>
         </div>
         <p class="form-note"><i class="fa-solid fa-circle-info"></i> Изменение шаблона не изменит ранее записанные в дневник блюда.</p>
@@ -602,16 +602,7 @@
         </div>
 
         <div class="form-group">
-          <textarea id="jsonInputTextarea" class="form-control code-textarea" rows="10" placeholder='[
-  {
-    "name": "Яйцо жареное 1шт",
-    "category": "breakfast",
-    "calories": 110,
-    "protein": 6.5,
-    "fat": 9,
-    "carbs": 0.5
-  }
-]'></textarea>
+          <textarea id="jsonInputTextarea" class="form-control code-textarea" rows="10"></textarea>
         </div>
 
         <div id="jsonValidationAlert" class="alert hidden"></div>
@@ -679,7 +670,7 @@
           <h4>Восстановление из JSON текста</h4>
           <p>Вставьте скопированный текст бэкапа ниже и нажмите «Восстановить»:</p>
           <div class="form-group" style="margin-top: 0.5rem;">
-            <textarea id="importBackupTextarea" class="form-control code-textarea" rows="5" placeholder='{"goals": {...}, "templates": [...]}'></textarea>
+            <textarea id="importBackupTextarea" class="form-control code-textarea" rows="5"></textarea>
           </div>
           <button id="triggerImportFileBtn" class="btn btn-secondary btn-block">
             <i class="fa-solid fa-rotate-left"></i> Восстановить данные
@@ -713,6 +704,6 @@
   </nav>
 
   <!-- JavaScript App Logic -->
-  <script src="js/app.js?v=14.0"></script>
+  <script src="js/app.js?v=15.0"></script>
 </body>
 </html>

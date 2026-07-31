@@ -7,12 +7,12 @@
 // 1. STATE & LOCALSTORAGE MANAGEMENT
 // ==========================================
 const STORAGE_KEYS = {
-  INITIALIZED: 'kbju_initialized_v6',
-  GOALS: 'kbju_goals_v6',
-  TEMPLATES: 'kbju_templates_v6',
-  LOGS: 'kbju_logs_v6',
-  WEIGHTS: 'kbju_weights_v6',
-  THEME: 'kbju_theme_v6'
+  INITIALIZED: 'kbju_initialized_v10',
+  GOALS: 'kbju_goals_v10',
+  TEMPLATES: 'kbju_templates_v10',
+  LOGS: 'kbju_logs_v10',
+  WEIGHTS: 'kbju_weights_v10',
+  THEME: 'kbju_theme_v10'
 };
 
 // Default Goals
@@ -23,17 +23,7 @@ const DEFAULT_GOALS = {
   carbs: 220
 };
 
-const DEFAULT_TEMPLATES = [
-  { id: 'tpl-1', name: 'Яйцо жареное 1шт', category: 'breakfast', calories: 110, protein: 6.5, fat: 9.0, carbs: 0.5 },
-  { id: 'tpl-2', name: 'Рис вареный 100г', category: 'lunch', calories: 130, protein: 2.7, fat: 0.3, carbs: 28.0 },
-  { id: 'tpl-3', name: 'Гречка вареная 100г', category: 'lunch', calories: 110, protein: 4.2, fat: 1.1, carbs: 21.3 },
-  { id: 'tpl-4', name: 'Макароны 100г', category: 'lunch', calories: 140, protein: 5.0, fat: 0.7, carbs: 27.5 },
-  { id: 'tpl-5', name: 'Куриное филе 100г', category: 'lunch', calories: 165, protein: 31.0, fat: 3.6, carbs: 0.0 },
-  { id: 'tpl-6', name: 'Окорок свиной 100г', category: 'dinner', calories: 230, protein: 21.0, fat: 16.0, carbs: 0.0 },
-  { id: 'tpl-7', name: 'Фарш Мираторг 100г', category: 'dinner', calories: 280, protein: 16.0, fat: 24.0, carbs: 0.0 },
-  { id: 'tpl-8', name: 'Хлеб 50г', category: 'breakfast', calories: 125, protein: 4.0, fat: 1.2, carbs: 24.5 },
-  { id: 'tpl-9', name: 'Изолят соевого белка 20г + молоко 300мл 2.5%', category: 'snack', calories: 233, protein: 26.0, fat: 7.9, carbs: 14.6 }
-];
+const DEFAULT_TEMPLATES = [];
 
 class AppState {
   constructor() {

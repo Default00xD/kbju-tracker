@@ -645,36 +645,47 @@ function initWeightTracker() {
 
 function renderWeightPage() {
   const currentVal = state.getWeight(state.selectedDate);
-  const weightInput = document.getElementById('weightValueInput');
-  const dateObj = parseIsoDate(state.selectedDate);
-
-  document.getElementById('weightCurrentDateText').textContent = formatDateRussian(dateObj);
-
-  if (currentVal !== null) {
-    weightInput.value = currentVal.toFixed(1);
-  } else {
-    // Fallback to latest recorded weight
-    const sortedDates = Object.keys(state.weights).sort();
-    const latest = sortedDates.length > 0 ? state.weights[sortedDates[sortedDates.length - 1]] : 70.0;
-    weightInput.value = latest.toFixed(1);
+  const weightInput = document.getElementById('weightInput');
+  if (weightInput) {
+    if (currentVal !== null) {
+      weightInput.value = currentVal.toFixed(1);
+    } else {
+      const sortedDates = Object.keys(state.weights).sort();
+      const latest = sortedDates.length > 0 ? state.weights[sortedDates[sortedDates.length - 1]] : 70.0;
+      weightInput.value = latest.toFixed(1);
+    }
   }
 
   // Quick stats
   const sortedDates = Object.keys(state.weights).sort();
+  const currentWeightElem = document.getElementById('currentWeightVal');
+  const weightDiffElem = document.getElementById('weightDiff7d');
+  const weightMinMaxElem = document.getElementById('weightMinMax');
+
   if (sortedDates.length > 0) {
     const latestVal = state.weights[sortedDates[sortedDates.length - 1]];
-    document.getElementById('latestWeightVal').textContent = `${latestVal.toFixed(1)} кг`;
+    if (currentWeightElem) currentWeightElem.textContent = `${latestVal.toFixed(1)} кг`;
 
-    // 7d change
+    const weightsArr = sortedDates.map(d => state.weights[d]);
+    const minW = Math.min(...weightsArr);
+    const maxW = Math.max(...weightsArr);
+    if (weightMinMaxElem) weightMinMaxElem.textContent = `${minW.toFixed(1)} / ${maxW.toFixed(1)} кг`;
+
     if (sortedDates.length > 1) {
       const firstVal = state.weights[sortedDates[0]];
       const diff = latestVal - firstVal;
       const sign = diff > 0 ? '+' : '';
-      document.getElementById('weightChange7d').textContent = `${sign}${diff.toFixed(1)} кг`;
-      document.getElementById('weightChange7d').style.color = diff <= 0 ? 'var(--carbs-color)' : 'var(--calories-color)';
+      if (weightDiffElem) {
+        weightDiffElem.textContent = `${sign}${diff.toFixed(1)} кг`;
+        weightDiffElem.style.color = diff <= 0 ? 'var(--carbs-color)' : 'var(--calories-color)';
+      }
+    } else if (weightDiffElem) {
+      weightDiffElem.textContent = '0.0 кг';
     }
   } else {
-    document.getElementById('latestWeightVal').textContent = '-- кг';
+    if (currentWeightElem) currentWeightElem.textContent = '-- кг';
+    if (weightDiffElem) weightDiffElem.textContent = '-- кг';
+    if (weightMinMaxElem) weightMinMaxElem.textContent = '-- / -- кг';
   }
 
   renderWeightHistoryTable();
@@ -682,7 +693,8 @@ function renderWeightPage() {
 }
 
 function renderWeightHistoryTable() {
-  const tbody = document.getElementById('weightHistoryTbody');
+  const tbody = document.getElementById('weightHistoryTableBody');
+  if (!tbody) return;
   const sortedDates = Object.keys(state.weights).sort().reverse();
 
   if (sortedDates.length === 0) {
@@ -837,23 +849,29 @@ function renderWeightChart() {
 // ==========================================
 
 function initCalendarAndStats() {
-  document.getElementById('calPrevMonthBtn').addEventListener('click', () => {
-    state.currentCalendarMonth--;
-    if (state.currentCalendarMonth < 0) {
-      state.currentCalendarMonth = 11;
-      state.currentCalendarYear--;
-    }
-    renderCalendar();
-  });
+  const prevBtn = document.getElementById('calPrevMonthBtn');
+  if (prevBtn) {
+    prevBtn.addEventListener('click', () => {
+      state.currentCalendarMonth--;
+      if (state.currentCalendarMonth < 0) {
+        state.currentCalendarMonth = 11;
+        state.currentCalendarYear--;
+      }
+      renderCalendar();
+    });
+  }
 
-  document.getElementById('calNextMonthBtn').addEventListener('click', () => {
-    state.currentCalendarMonth++;
-    if (state.currentCalendarMonth > 11) {
-      state.currentCalendarMonth = 0;
-      state.currentCalendarYear++;
-    }
-    renderCalendar();
-  });
+  const nextBtn = document.getElementById('calNextMonthBtn');
+  if (nextBtn) {
+    nextBtn.addEventListener('click', () => {
+      state.currentCalendarMonth++;
+      if (state.currentCalendarMonth > 11) {
+        state.currentCalendarMonth = 0;
+        state.currentCalendarYear++;
+      }
+      renderCalendar();
+    });
+  }
 
   renderCalendarAndStatsPage();
 }
@@ -868,15 +886,25 @@ function renderAverages() {
   const weekStats = calculatePastDaysAverage(7);
   const monthStats = calculatePastDaysAverage(30);
 
-  document.getElementById('avgWeekCalories').textContent = Math.round(weekStats.calories);
-  document.getElementById('avgWeekProtein').textContent = `${Math.round(weekStats.protein)}г`;
-  document.getElementById('avgWeekFat').textContent = `${Math.round(weekStats.fat)}г`;
-  document.getElementById('avgWeekCarbs').textContent = `${Math.round(weekStats.carbs)}г`;
+  const avg7Cal = document.getElementById('avg7Calories');
+  const avg7P = document.getElementById('avg7Protein');
+  const avg7F = document.getElementById('avg7Fat');
+  const avg7C = document.getElementById('avg7Carbs');
 
-  document.getElementById('avgMonthCalories').textContent = Math.round(monthStats.calories);
-  document.getElementById('avgMonthProtein').textContent = `${Math.round(monthStats.protein)}г`;
-  document.getElementById('avgMonthFat').textContent = `${Math.round(monthStats.fat)}г`;
-  document.getElementById('avgMonthCarbs').textContent = `${Math.round(monthStats.carbs)}г`;
+  if (avg7Cal) avg7Cal.textContent = Math.round(weekStats.calories);
+  if (avg7P) avg7P.textContent = `${Math.round(weekStats.protein)}г`;
+  if (avg7F) avg7F.textContent = `${Math.round(weekStats.fat)}г`;
+  if (avg7C) avg7C.textContent = `${Math.round(weekStats.carbs)}г`;
+
+  const avgMCal = document.getElementById('avgMonthCalories');
+  const avgMP = document.getElementById('avgMonthProtein');
+  const avgMF = document.getElementById('avgMonthFat');
+  const avgMC = document.getElementById('avgMonthCarbs');
+
+  if (avgMCal) avgMCal.textContent = Math.round(monthStats.calories);
+  if (avgMP) avgMP.textContent = `${Math.round(monthStats.protein)}г`;
+  if (avgMF) avgMF.textContent = `${Math.round(monthStats.fat)}г`;
+  if (avgMC) avgMC.textContent = `${Math.round(monthStats.carbs)}г`;
 }
 
 function calculatePastDaysAverage(daysCount) {
@@ -1080,12 +1108,40 @@ function renderNutritionChart() {
 // ==========================================
 
 function initModals() {
-  // Generic Close Buttons
-  document.querySelectorAll('[data-close-modal]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const modalId = btn.getAttribute('data-close-modal');
-      document.getElementById(modalId).classList.add('hidden');
-    });
+  // Global Delegate listener for ALL modal close buttons (X, Cancel, Backdrop)
+  document.addEventListener('click', (e) => {
+    const closeBtn = e.target.closest('[data-close-modal]');
+    if (closeBtn) {
+      const modalId = closeBtn.getAttribute('data-close-modal');
+      const modal = document.getElementById(modalId);
+      if (modal) modal.classList.add('hidden');
+      return;
+    }
+
+    // Close modal when clicking backdrop
+    if (e.target.classList.contains('modal-backdrop')) {
+      e.target.classList.add('hidden');
+    }
+
+    // Goal Settings Trigger
+    const goalBtn = e.target.closest('#goalSettingsBtn');
+    if (goalBtn) {
+      const modal = document.getElementById('goalSettingsModal');
+      if (modal) {
+        document.getElementById('goalCalInput').value = state.goals.calories;
+        document.getElementById('goalPInput').value = state.goals.protein;
+        document.getElementById('goalFInput').value = state.goals.fat;
+        document.getElementById('goalCInput').value = state.goals.carbs;
+        modal.classList.remove('hidden');
+      }
+    }
+
+    // Backup Trigger
+    const backupBtn = e.target.closest('#backupBtn');
+    if (backupBtn) {
+      const modal = document.getElementById('backupModal');
+      if (modal) modal.classList.remove('hidden');
+    }
   });
 
   // Modal Sub-tabs (From Template vs Custom Entry)
@@ -1097,60 +1153,72 @@ function initModals() {
       btn.classList.add('active');
       const targetTab = btn.getAttribute('data-modal-tab');
       if (targetTab === 'from-template') {
-        document.getElementById('modalTabFromTemplate').classList.add('active');
+        const tab1 = document.getElementById('modalTabFromTemplate');
+        if (tab1) tab1.classList.add('active');
       } else {
-        document.getElementById('modalTabCustomEntry').classList.add('active');
+        const tab2 = document.getElementById('modalTabCustomEntry');
+        if (tab2) tab2.classList.add('active');
       }
     });
   });
 
-  // Goal Settings Modal
-  document.getElementById('goalSettingsBtn').addEventListener('click', () => {
-    document.getElementById('goalCalInput').value = state.goals.calories;
-    document.getElementById('goalPInput').value = state.goals.protein;
-    document.getElementById('goalFInput').value = state.goals.fat;
-    document.getElementById('goalCInput').value = state.goals.carbs;
-    document.getElementById('goalSettingsModal').classList.remove('hidden');
-  });
+  const saveGoalsBtn = document.getElementById('saveGoalsBtn');
+  if (saveGoalsBtn) {
+    saveGoalsBtn.addEventListener('click', () => {
+      const calories = Number(document.getElementById('goalCalInput').value) || 2000;
+      const protein = Number(document.getElementById('goalPInput').value) || 130;
+      const fat = Number(document.getElementById('goalFInput').value) || 65;
+      const carbs = Number(document.getElementById('goalCInput').value) || 220;
 
-  document.getElementById('saveGoalsBtn').addEventListener('click', () => {
-    const calories = Number(document.getElementById('goalCalInput').value) || 2000;
-    const protein = Number(document.getElementById('goalPInput').value) || 130;
-    const fat = Number(document.getElementById('goalFInput').value) || 65;
-    const carbs = Number(document.getElementById('goalCInput').value) || 220;
-
-    state.setGoals({ calories, protein, fat, carbs });
-    document.getElementById('goalSettingsModal').classList.add('hidden');
-    renderDashboard();
-    showToast('Цели КБЖУ обновлены!', 'success');
-  });
+      state.setGoals({ calories, protein, fat, carbs });
+      document.getElementById('goalSettingsModal').classList.add('hidden');
+      renderDashboard();
+      showToast('Цели КБЖУ обновлены!', 'success');
+    });
+  }
 
   // Add Meal Modal Submit
-  document.getElementById('submitAddMealBtn').addEventListener('click', handleAddMealSubmit);
+  const submitAddMealBtn = document.getElementById('submitAddMealBtn');
+  if (submitAddMealBtn) submitAddMealBtn.addEventListener('click', handleAddMealSubmit);
 
   // Template Modal Save
-  document.getElementById('saveTemplateBtn').addEventListener('click', handleSaveTemplateSubmit);
+  const saveTemplateBtn = document.getElementById('saveTemplateBtn');
+  if (saveTemplateBtn) saveTemplateBtn.addEventListener('click', handleSaveTemplateSubmit);
 
   // Template Select Preview change
-  document.getElementById('modalTemplateSelect').addEventListener('change', (e) => {
-    const tplId = e.target.value;
-    const previewBox = document.getElementById('templatePreviewBox');
-    if (!tplId) {
-      previewBox.classList.add('hidden');
-      return;
-    }
+  const modalTemplateSelect = document.getElementById('modalTemplateSelect');
+  if (modalTemplateSelect) {
+    modalTemplateSelect.addEventListener('change', (e) => {
+      const tplId = e.target.value;
+      const previewBox = document.getElementById('templatePreviewBox');
+      if (!previewBox) return;
 
-    const tpl = state.templates.find(t => t.id === tplId);
-    if (tpl) {
-      document.getElementById('modalPortionFactor').value = '1.0';
-      document.getElementById('prevTemplateName').textContent = tpl.name;
-      document.getElementById('prevTemplateCal').textContent = `${Math.round(tpl.calories)} ккал`;
-      document.getElementById('prevTemplateP').textContent = `Б: ${tpl.protein}г`;
-      document.getElementById('prevTemplateF').textContent = `Ж: ${tpl.fat}г`;
-      document.getElementById('prevTemplateC').textContent = `У: ${tpl.carbs}г`;
-      previewBox.classList.remove('hidden');
-    }
-  });
+      if (!tplId) {
+        previewBox.classList.add('hidden');
+        return;
+      }
+
+      const tpl = state.templates.find(t => t.id === tplId);
+      if (tpl) {
+        const portionSelect = document.getElementById('modalPortionFactor');
+        if (portionSelect) portionSelect.value = '1.0';
+
+        const nameElem = document.getElementById('prevTemplateName');
+        const calElem = document.getElementById('prevTemplateCal');
+        const pElem = document.getElementById('prevTemplateP');
+        const fElem = document.getElementById('prevTemplateF');
+        const cElem = document.getElementById('prevTemplateC');
+
+        if (nameElem) nameElem.textContent = tpl.name;
+        if (calElem) calElem.textContent = `${Math.round(tpl.calories)} ккал`;
+        if (pElem) pElem.textContent = `Б: ${tpl.protein}г`;
+        if (fElem) fElem.textContent = `Ж: ${tpl.fat}г`;
+        if (cElem) cElem.textContent = `У: ${tpl.carbs}г`;
+
+        previewBox.classList.remove('hidden');
+      }
+    });
+  }
 
   // JSON Import Modal init
   initJsonImportModal();

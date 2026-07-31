@@ -271,20 +271,32 @@ function initNavigation() {
   const pages = document.querySelectorAll('.tab-page');
 
   navBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
       const targetTab = btn.getAttribute('data-tab');
 
-      navBtns.forEach(b => b.classList.remove('active'));
-      pages.forEach(p => p.classList.remove('active'));
+      navBtns.forEach(b => {
+        if (b.getAttribute('data-tab') === targetTab) b.classList.add('active');
+        else b.classList.remove('active');
+      });
 
-      btn.classList.add('active');
-      document.getElementById(`tab-${targetTab}`).classList.add('active');
+      pages.forEach(p => p.classList.remove('active'));
+      const activePage = document.getElementById(`tab-${targetTab}`);
+      if (activePage) {
+        activePage.classList.add('active');
+      }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
 
       // Trigger page-specific re-renders
-      if (targetTab === 'dashboard') renderDashboard();
-      if (targetTab === 'templates') renderTemplatesList();
-      if (targetTab === 'weight') renderWeightPage();
-      if (targetTab === 'calendar') renderCalendarAndStatsPage();
+      try {
+        if (targetTab === 'dashboard') renderDashboard();
+        if (targetTab === 'templates') renderTemplatesList();
+        if (targetTab === 'weight') renderWeightPage();
+        if (targetTab === 'calendar') renderCalendarAndStatsPage();
+      } catch (err) {
+        console.error('Tab render error:', err);
+      }
     });
   });
 }

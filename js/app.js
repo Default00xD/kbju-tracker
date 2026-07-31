@@ -215,6 +215,7 @@ document.addEventListener('DOMContentLoaded', () => {
   try { initCalendarAndStats(); } catch (e) { console.error(e); }
   try { initModals(); } catch (e) { console.error(e); }
   try { initBackup(); } catch (e) { console.error(e); }
+  try { initExportDay(); } catch (e) { console.error(e); }
 });
 
 // --- Theme Management ---
@@ -1817,4 +1818,54 @@ class CloudDatabaseService {
       badge.innerHTML = `<i class="fa-solid fa-hard-drive"></i> ${escapeHtml(text)}`;
     }
   }
+}
+
+function initExportDay() {
+  const btn = document.getElementById('exportDayBtn');
+  if (!btn) return;
+  btn.addEventListener('click', () => {
+    const dateStr = state.selectedDate;
+    const logs = state.logs[dateStr] || [];
+    let text = '📅 Дневник за ' + dateStr + '\n';
+    text += 'Итого: ' + document.getElementById('totalCal').textContent + ' ккал |\n';
+    text += 'Б: ' + document.getElementById('totalP').textContent + 'г | ';
+    text += 'Ж: ' + document.getElementById('totalF').textContent + 'г | ';
+    text += 'У: ' + document.getElementById('totalC').textContent + 'г\n\n';
+    const cats = [{k:'breakfast',n:'Завтрак'},{k:'lunch',n:'Обед'},{k:'dinner',n:'Ужин'},{k:'snack',n:'Перекус'}];
+    cats.forEach(c => {
+      const catLogs = logs.filter(l => l.category === c.k);
+      if(catLogs.length > 0) {
+        text += '🍽 ' + c.n + ':\n';
+        catLogs.forEach(l => {
+          text += '- ' + l.name;
+          if (l.portionFactor && l.portionFactor !== 1) text += ' (' + l.portionFactor.toFixed(1) + 'x)';
+          text += ' — ' + l.calories + ' ккал (Б:' + l.protein + ' Ж:' + l.fat + ' У:' + l.carbs + ')\n';
+        });
+        text += '\n';
+      }
+    });
+    if(navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(() => {
+        showToast('✅ Данные скопированы в буфер обмена', 'success');
+      }).catch(() => {
+        showToast('❌ Ошибка при копировании', 'error');
+      });
+    } else {
+      // fallback for non-https
+      let textArea = document.createElement('textarea');
+      textArea.value = text;
+      textArea.style.position = 'fixed';
+      textArea.style.left = '-999999px';
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      try {
+        document.execCommand('copy');
+        showToast('✅ Данные скопированы в буфер обмена', 'success');
+      } catch (err) {
+        showToast('❌ Ошибка при копировании', 'error');
+      }
+      textArea.remove();
+    }
+  });
 }

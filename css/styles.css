@@ -1223,6 +1223,27 @@ h1, h2, h3, h4, .logo-title {
   color: var(--text-muted);
 }
 
+/* Settings Toolbar inside Statistics Tab */
+.settings-toolbar-card {
+  margin-bottom: 1.25rem;
+  padding: 1.25rem;
+}
+
+.toolbar-header h3 {
+  font-size: 1.1rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.toolbar-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+}
+
 /* --- MODALS --- */
 .modal-backdrop {
   position: fixed;
@@ -1230,9 +1251,10 @@ h1, h2, h3, h4, .logo-title {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.65);
+  background-color: rgba(0, 0, 0, 0.7);
   backdrop-filter: blur(8px);
-  z-index: 1000;
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 2000;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1242,7 +1264,7 @@ h1, h2, h3, h4, .logo-title {
 }
 
 .modal-backdrop.hidden {
-  display: none;
+  display: none !important;
   opacity: 0;
   pointer-events: none;
 }
@@ -1253,6 +1275,7 @@ h1, h2, h3, h4, .logo-title {
   border-radius: var(--radius-lg);
   width: 100%;
   max-width: 480px;
+  margin: auto;
   box-shadow: var(--shadow-lg);
   display: flex;
   flex-direction: column;
@@ -1671,17 +1694,11 @@ h1, h2, h3, h4, .logo-title {
     font-size: 0.6rem;
   }
 
-  /* Mobile Modals as Bottom Sheets */
+  /* Mobile Modals Centered */
   .modal-card {
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
+    border-radius: var(--radius-lg);
     max-height: 90vh;
-    animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .modal-backdrop {
-    align-items: flex-end;
-    padding: 0;
+    margin: auto;
   }
 }
 

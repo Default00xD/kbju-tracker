@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>КБЖУ Трекер — Простой подсчет и отслеживание питания</title>
+
+  <!-- Google Fonts: Inter & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome for crisp icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div id="app" class="app-container">
+    <!-- Navigation Header -->
+    <header class="app-header">
+      <div class="header-content">
+        <div class="logo-group">
+          <div class="logo-icon"><i class="fa-solid fa-fire-flame-curved"></i></div>
+          <div class="logo-text">
+            <span class="logo-title">КБЖУ<span class="highlight">Трекер</span></span>
+            <span class="logo-subtitle">Дневник & Шаблоны</span>
+          </div>
+        </div>
+
+        <nav class="main-nav">
+          <button class="nav-btn active" data-tab="dashboard">
+            <i class="fa-solid fa-house"></i>
+            <span>Главная</span>
+          </button>
+          <button class="nav-btn" data-tab="templates">
+            <i class="fa-solid fa-utensils"></i>
+            <span>Шаблоны</span>
+          </button>
+          <button class="nav-btn" data-tab="weight">
+            <i class="fa-solid fa-weight-scale"></i>
+            <span>Вес</span>
+          </button>
+          <button class="nav-btn" data-tab="calendar">
+            <i class="fa-solid fa-calendar-days"></i>
+            <span>Календарь & Статистика</span>
+          </button>
+        </nav>
+
+        <div class="header-actions">
+          <button id="themeToggleBtn" class="icon-btn" title="Переключить тему">
+            <i class="fa-solid fa-moon"></i>
+          </button>
+          <button id="goalSettingsBtn" class="btn btn-secondary btn-sm" title="Настроить цели">
+            <i class="fa-solid fa-bullseye"></i>
+            <span>Цели</span>
+          </button>
+          <button id="backupBtn" class="btn btn-outline btn-sm" title="Резервное копирование">
+            <i class="fa-solid fa-database"></i>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Container Content -->
+    <main class="app-body">
+      
+      <!-- TAB 1: DASHBOARD (ГЛАВНАЯ) -->
+      <section id="tab-dashboard" class="tab-page active">
+        <!-- Date Header & Controls -->
+        <div class="date-bar card">
+          <button id="prevDateBtn" class="icon-btn-circle" title="Предыдущий день"><i class="fa-solid fa-chevron-left"></i></button>
+          <div class="date-display-wrapper">
+            <input type="date" id="datePickerInput" class="date-input-hidden">
+            <div id="currentDateDisplay" class="date-display-text">
+              <span id="dateTextMain">31 Июля 2026</span>
+              <span id="dateSubText" class="badge-today">Сегодня</span>
+            </div>
+          </div>
+          <button id="nextDateBtn" class="icon-btn-circle" title="Следующий день"><i class="fa-solid fa-chevron-right"></i></button>
+          <button id="todayBtn" class="btn btn-ghost btn-sm">Сегодня</button>
+        </div>
+
+        <!-- KBJU Gauges / Progress Section -->
+        <div class="kbju-summary-grid">
+          <!-- Main Calories Card -->
+          <div class="kbju-card calories-card card">
+            <div class="card-header-compact">
+              <div class="macro-label">
+                <i class="fa-solid fa-fire macro-icon calories-color"></i>
+                <span>Калории</span>
+              </div>
+              <span id="caloriesTarget" class="target-val">Цель: 2000 ккал</span>
+            </div>
+            <div class="gauge-wrapper">
+              <div class="calories-numbers">
+                <span id="caloriesCurrent" class="current-val">0</span>
+                <span class="unit">ккал</span>
+              </div>
+              <div class="calories-subtext">
+                <span id="caloriesStatus">Осталось: 2000 ккал</span>
+              </div>
+            </div>
+            <div class="progress-bar-container">
+              <div id="caloriesBar" class="progress-bar-fill calories-bar" style="width: 0%"></div>
+            </div>
+          </div>
+
+          <!-- Protein Card -->
+          <div class="kbju-card macro-card card">
+            <div class="card-header-compact">
+              <div class="macro-label">
+                <i class="fa-solid fa-drumstick-bite macro-icon protein-color"></i>
+                <span>Белки</span>
+              </div>
+              <span id="proteinTarget" class="target-val">130г</span>
+            </div>
+            <div class="macro-stats">
+              <div class="macro-main-num">
+                <span id="proteinCurrent">0</span><span class="unit">г</span>
+              </div>
+              <span id="proteinPercent" class="percent-badge">0%</span>
+            </div>
+            <div class="progress-bar-container">
+              <div id="proteinBar" class="progress-bar-fill protein-bar" style="width: 0%"></div>
+            </div>
+          </div>
+
+          <!-- Fat Card -->
+          <div class="kbju-card macro-card card">
+            <div class="card-header-compact">
+              <div class="macro-label">
+                <i class="fa-solid fa-droplet macro-icon fat-color"></i>
+                <span>Жиры</span>
+              </div>
+              <span id="fatTarget" class="target-val">65г</span>
+            </div>
+            <div class="macro-stats">
+              <div class="macro-main-num">
+                <span id="fatCurrent">0</span><span class="unit">г</span>
+              </div>
+              <span id="fatPercent" class="percent-badge">0%</span>
+            </div>
+            <div class="progress-bar-container">
+              <div id="fatBar" class="progress-bar-fill fat-bar" style="width: 0%"></div>
+            </div>
+          </div>
+
+          <!-- Carbs Card -->
+          <div class="kbju-card macro-card card">
+            <div class="card-header-compact">
+              <div class="macro-label">
+                <i class="fa-solid fa-wheat-awn macro-icon carbs-color"></i>
+                <span>Углеводы</span>
+              </div>
+              <span id="carbsTarget" class="target-val">220г</span>
+            </div>
+            <div class="macro-stats">
+              <div class="macro-main-num">
+                <span id="carbsCurrent">0</span><span class="unit">г</span>
+              </div>
+              <span id="carbsPercent" class="percent-badge">0%</span>
+            </div>
+            <div class="progress-bar-container">
+              <div id="carbsBar" class="progress-bar-fill carbs-bar" style="width: 0%"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Meals Grid Section (4 categories: Завтрак, Обед, Ужин, Перекус) -->
+        <div class="meals-grid">
+          <!-- Breakfast Category -->
+          <div class="meal-category-card card" data-meal-type="breakfast">
+            <div class="meal-header">
+              <div class="meal-title-group">
+                <i class="fa-solid fa-sun meal-icon breakfast-icon"></i>
+                <div>
+                  <h3>Завтрак</h3>
+                  <span id="breakfastSummary" class="meal-summary">0 ккал • Б:0 Ж:0 У:0</span>
+                </div>
+              </div>
+              <button class="btn btn-sm btn-primary add-meal-btn" data-meal-type="breakfast">
+                <i class="fa-solid fa-plus"></i> Добавить
+              </button>
+            </div>
+            <div id="breakfastItems" class="meal-items-list">
+              <div class="empty-meal-hint">Записей нет</div>
+            </div>
+          </div>
+
+          <!-- Lunch Category -->
+          <div class="meal-category-card card" data-meal-type="lunch">
+            <div class="meal-header">
+              <div class="meal-title-group">
+                <i class="fa-solid fa-bowl-food meal-icon lunch-icon"></i>
+                <div>
+                  <h3>Обед</h3>
+                  <span id="lunchSummary" class="meal-summary">0 ккал • Б:0 Ж:0 У:0</span>
+                </div>
+              </div>
+              <button class="btn btn-sm btn-primary add-meal-btn" data-meal-type="lunch">
+                <i class="fa-solid fa-plus"></i> Добавить
+              </button>
+            </div>
+            <div id="lunchItems" class="meal-items-list">
+              <div class="empty-meal-hint">Записей нет</div>
+            </div>
+          </div>
+
+          <!-- Dinner Category -->
+          <div class="meal-category-card card" data-meal-type="dinner">
+            <div class="meal-header">
+              <div class="meal-title-group">
+                <i class="fa-solid fa-moon meal-icon dinner-icon"></i>
+                <div>
+                  <h3>Ужин</h3>
+                  <span id="dinnerSummary" class="meal-summary">0 ккал • Б:0 Ж:0 У:0</span>
+                </div>
+              </div>
+              <button class="btn btn-sm btn-primary add-meal-btn" data-meal-type="dinner">
+                <i class="fa-solid fa-plus"></i> Добавить
+              </button>
+            </div>
+            <div id="dinnerItems" class="meal-items-list">
+              <div class="empty-meal-hint">Записей нет</div>
+            </div>
+          </div>
+
+          <!-- Snack Category -->
+          <div class="meal-category-card card" data-meal-type="snack">
+            <div class="meal-header">
+              <div class="meal-title-group">
+                <i class="fa-solid fa-apple-whole meal-icon snack-icon"></i>
+                <div>
+                  <h3>Перекус</h3>
+                  <span id="snackSummary" class="meal-summary">0 ккал • Б:0 Ж:0 У:0</span>
+                </div>
+              </div>
+              <button class="btn btn-sm btn-primary add-meal-btn" data-meal-type="snack">
+                <i class="fa-solid fa-plus"></i> Добавить
+              </button>
+            </div>
+            <div id="snackItems" class="meal-items-list">
+              <div class="empty-meal-hint">Записей нет</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 2: TEMPLATES (ШАБЛОНЫ) -->
+      <section id="tab-templates" class="tab-page">
+        <div class="section-header card">
+          <div>
+            <h2>Шаблоны приёмов пищи</h2>
+            <p class="section-desc">Создавайте готовые шаблоны блюд или загружайте их через JSON. Редактирование шаблона не меняет ранее сохранённую историю!</p>
+          </div>
+          <div class="section-actions">
+            <button id="createTemplateBtn" class="btn btn-primary">
+              <i class="fa-solid fa-plus"></i> Новый шаблон
+            </button>
+            <button id="importJsonModalBtn" class="btn btn-secondary">
+              <i class="fa-solid fa-file-code"></i> Загрузить / Экспорт JSON
+            </button>
+          </div>
+        </div>
+
+        <!-- Filter bar -->
+        <div class="filter-bar card">
+          <div class="search-input-group">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="templateSearchInput" placeholder="Поиск шаблонов по названию...">
+          </div>
+          <div class="category-filters">
+            <button class="filter-chip active" data-filter="all">Все</button>
+            <button class="filter-chip" data-filter="breakfast">Завтрак</button>
+            <button class="filter-chip" data-filter="lunch">Обед</button>
+            <button class="filter-chip" data-filter="dinner">Ужин</button>
+            <button class="filter-chip" data-filter="snack">Перекус</button>
+          </div>
+        </div>
+
+        <!-- Templates Grid -->
+        <div id="templatesGrid" class="templates-grid">
+          <!-- Dynamically populated -->
+        </div>
+      </section>
+
+      <!-- TAB 3: WEIGHT TRACKER (ВЕС) -->
+      <section id="tab-weight" class="tab-page">
+        <div class="section-header card">
+          <div>
+            <h2>Отслеживание веса</h2>
+            <p class="section-desc">Записывайте изменения веса с шагом 0.1 кг и отслеживайте динамику на графике.</p>
+          </div>
+        </div>
+
+        <div class="weight-dashboard-grid">
+          <!-- Weight Control Card -->
+          <div class="card weight-control-card">
+            <h3>Запись веса на <span id="weightCurrentDateText">сегодня</span></h3>
+            
+            <div class="weight-stepper-container">
+              <button id="weightMinusBtn" class="stepper-btn stepper-minus" title="Уменьшить на 0.1 кг">
+                <i class="fa-solid fa-minus"></i> -0.1
+              </button>
+              
+              <div class="weight-input-box">
+                <input type="number" id="weightValueInput" step="0.1" min="20" max="300" placeholder="0.0">
+                <span class="weight-unit">кг</span>
+              </div>
+              
+              <button id="weightPlusBtn" class="stepper-btn stepper-plus" title="Увеличить на 0.1 кг">
+                <i class="fa-solid fa-plus"></i> +0.1
+              </button>
+            </div>
+
+            <div class="weight-actions-row">
+              <button id="saveWeightBtn" class="btn btn-primary btn-block">
+                <i class="fa-solid fa-check"></i> Сохранить вес
+              </button>
+            </div>
+
+            <div class="weight-quick-stats">
+              <div class="quick-stat-box">
+                <span class="stat-title">Текущий вес</span>
+                <span id="latestWeightVal" class="stat-value">-- кг</span>
+              </div>
+              <div class="quick-stat-box">
+                <span class="stat-title">Изменение (7 дней)</span>
+                <span id="weightChange7d" class="stat-value">0.0 кг</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Weight Chart & Logs -->
+          <div class="card weight-chart-card">
+            <div class="card-header-flex">
+              <h3>График динамики веса</h3>
+              <div class="time-range-selector">
+                <button class="range-btn active" data-range="14">2 недели</button>
+                <button class="range-btn" data-range="30">30 дней</button>
+                <button class="range-btn" data-range="all">Всё время</button>
+              </div>
+            </div>
+            <div class="chart-container">
+              <canvas id="weightCanvas" height="240"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Weight History Table -->
+        <div class="card weight-history-card">
+          <h3>История записей веса</h3>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Дата</th>
+                  <th>Вес (кг)</th>
+                  <th>Изменение</th>
+                  <th>Действия</th>
+                </tr>
+              </thead>
+              <tbody id="weightHistoryTbody">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 4: CALENDAR & STATS (КАЛЕНДАРЬ И СТАТИСТИКА) -->
+      <section id="tab-calendar" class="tab-page">
+        <!-- Stats Summary Boxes (Weekly and Monthly Averages) -->
+        <div class="stats-summary-grid">
+          <!-- Weekly Averages (7 days) -->
+          <div class="card stat-card weekly-card">
+            <div class="stat-card-title">
+              <i class="fa-solid fa-chart-simple"></i>
+              <span>Среднее за Неделю (7 дней)</span>
+            </div>
+            <div class="stat-values-row">
+              <div class="stat-item">
+                <span class="stat-num calories-color" id="avgWeekCalories">0</span>
+                <span class="stat-lbl">ккал/день</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-num protein-color" id="avgWeekProtein">0г</span>
+                <span class="stat-lbl">Белок</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-num fat-color" id="avgWeekFat">0г</span>
+                <span class="stat-lbl">Жир</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-num carbs-color" id="avgWeekCarbs">0г</span>
+                <span class="stat-lbl">Углевод</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Monthly Averages (30 days) -->
+          <div class="card stat-card monthly-card">
+            <div class="stat-card-title">
+              <i class="fa-solid fa-chart-line"></i>
+              <span>Среднее за Месяц (30 дней)</span>
+            </div>
+            <div class="stat-values-row">
+              <div class="stat-item">
+                <span class="stat-num calories-color" id="avgMonthCalories">0</span>
+                <span class="stat-lbl">ккал/день</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-num protein-color" id="avgMonthProtein">0г</span>
+                <span class="stat-lbl">Белок</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-num fat-color" id="avgMonthFat">0г</span>
+                <span class="stat-lbl">Жир</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-num carbs-color" id="avgMonthCarbs">0г</span>
+                <span class="stat-lbl">Углевод</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Calendar Section -->
+        <div class="card calendar-card">
+          <div class="calendar-header-bar">
+            <div class="month-nav">
+              <button id="calPrevMonthBtn" class="icon-btn-circle"><i class="fa-solid fa-chevron-left"></i></button>
+              <h3 id="calendarMonthYearText">Июль 2026</h3>
+              <button id="calNextMonthBtn" class="icon-btn-circle"><i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+            <div class="calendar-legend">
+              <span class="legend-item"><span class="dot dot-success"></span> Норма</span>
+              <span class="legend-item"><span class="dot dot-warning"></span> Перебор</span>
+              <span class="legend-item"><span class="dot dot-partial"></span> Частично</span>
+            </div>
+          </div>
+
+          <!-- Calendar Grid -->
+          <div class="calendar-weekdays">
+            <span>Пн</span><span>Вт</span><span>Ср</span><span>Чт</span><span>Пт</span><span>Сб</span><span>Вс</span>
+          </div>
+          <div id="calendarDaysGrid" class="calendar-days-grid">
+            <!-- Dynamically generated calendar grid -->
+          </div>
+        </div>
+
+        <!-- Additional Nutrition Trend Charts -->
+        <div class="card nutrition-chart-card">
+          <h3>Динамика калорий за последние 14 дней</h3>
+          <div class="chart-container">
+            <canvas id="nutritionCanvas" height="220"></canvas>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- MODALS -->
+
+  <!-- 1. Add Meal from Template or Custom Modal -->
+  <div id="addMealModal" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="addMealModalTitle">Добавить блюдо</h3>
+        <button class="modal-close-btn" data-close-modal="addMealModal"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      
+      <!-- Tabs inside modal: Saved Templates vs Custom Ad-hoc -->
+      <div class="modal-tabs">
+        <button class="modal-tab-btn active" data-modal-tab="from-template">
+          <i class="fa-solid fa-list-check"></i> Из шаблонов
+        </button>
+        <button class="modal-tab-btn" data-modal-tab="custom-entry">
+          <i class="fa-solid fa-pen"></i> Ввести вручную
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Sub-tab 1: Select Template -->
+        <div id="modalTabFromTemplate" class="modal-tab-content active">
+          <div class="form-group">
+            <label>Выберите шаблон:</label>
+            <select id="modalTemplateSelect" class="form-control">
+              <option value="">-- Выберите шаблон --</option>
+            </select>
+          </div>
+
+          <div id="templatePreviewBox" class="template-preview-box hidden">
+            <div class="preview-title" id="prevTemplateName">Название шаблона</div>
+            <div class="preview-kbju">
+              <span id="prevTemplateCal" class="tag tag-cal">0 ккал</span>
+              <span id="prevTemplateP" class="tag tag-p">Б: 0г</span>
+              <span id="prevTemplateF" class="tag tag-f">Ж: 0г</span>
+              <span id="prevTemplateC" class="tag tag-c">У: 0г</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Коэффициент порции / Множитель:</label>
+            <div class="portion-input-row">
+              <input type="number" id="modalPortionFactor" class="form-control" value="1.0" step="0.1" min="0.1" max="20">
+              <span class="portion-hint">x (1.0 = 100% порции)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sub-tab 2: Custom Entry -->
+        <div id="modalTabCustomEntry" class="modal-tab-content">
+          <div class="form-group">
+            <label>Название блюда / продукта:</label>
+            <input type="text" id="customMealName" class="form-control" placeholder="например, Гречка с маслом">
+          </div>
+          <div class="form-row-2">
+            <div class="form-group">
+              <label>Калории (ккал):</label>
+              <input type="number" id="customMealCal" class="form-control" min="0" placeholder="0">
+            </div>
+            <div class="form-group">
+              <label>Белки (г):</label>
+              <input type="number" id="customMealP" class="form-control" min="0" step="0.1" placeholder="0">
+            </div>
+          </div>
+          <div class="form-row-2">
+            <div class="form-group">
+              <label>Жиры (г):</label>
+              <input type="number" id="customMealF" class="form-control" min="0" step="0.1" placeholder="0">
+            </div>
+            <div class="form-group">
+              <label>Углеводы (г):</label>
+              <input type="number" id="customMealC" class="form-control" min="0" step="0.1" placeholder="0">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-close-modal="addMealModal">Отмена</button>
+        <button id="submitAddMealBtn" class="btn btn-primary">Добавить в дневник</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Create / Edit Template Modal -->
+  <div id="templateEditModal" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="templateModalTitle">Создать новый шаблон</h3>
+        <button class="modal-close-btn" data-close-modal="templateEditModal"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="editTemplateId">
+        <div class="form-group">
+          <label>Название шаблона:</label>
+          <input type="text" id="tplNameInput" class="form-control" placeholder="например, Куриное филе с рисом">
+        </div>
+        <div class="form-group">
+          <label>Приём пищи по умолчанию:</label>
+          <select id="tplCategoryInput" class="form-control">
+            <option value="breakfast">Завтрак</option>
+            <option value="lunch">Обед</option>
+            <option value="dinner">Ужин</option>
+            <option value="snack">Перекус</option>
+          </select>
+        </div>
+        <div class="form-row-2">
+          <div class="form-group">
+            <label>Калории (ккал):</label>
+            <input type="number" id="tplCalInput" class="form-control" min="0" placeholder="350">
+          </div>
+          <div class="form-group">
+            <label>Белки (г):</label>
+            <input type="number" id="tplPInput" class="form-control" min="0" step="0.1" placeholder="30">
+          </div>
+        </div>
+        <div class="form-row-2">
+          <div class="form-group">
+            <label>Жиры (г):</label>
+            <input type="number" id="tplFInput" class="form-control" min="0" step="0.1" placeholder="8">
+          </div>
+          <div class="form-group">
+            <label>Углеводы (г):</label>
+            <input type="number" id="tplCInput" class="form-control" min="0" step="0.1" placeholder="40">
+          </div>
+        </div>
+        <p class="form-note"><i class="fa-solid fa-circle-info"></i> Изменение шаблона обновит будущие добавления и не затронет старую сохранённую историю.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-close-modal="templateEditModal">Отмена</button>
+        <button id="saveTemplateBtn" class="btn btn-primary">Сохранить шаблон</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Bulk JSON Import / Export Modal -->
+  <div id="jsonImportModal" class="modal-backdrop hidden">
+    <div class="modal-card modal-lg">
+      <div class="modal-header">
+        <h3>Массовая загрузка / Экспорт шаблонов JSON</h3>
+        <button class="modal-close-btn" data-close-modal="jsonImportModal"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-desc">Вставьте несколько шаблонов в формате JSON или скопируйте их. Нажмите «Загрузить шаблон-пример» для просмотра структуры.</p>
+
+        <div class="json-tools-bar">
+          <button id="insertSampleJsonBtn" class="btn btn-ghost btn-sm">
+            <i class="fa-solid fa-code"></i> Загрузить пример JSON
+          </button>
+          <button id="copyJsonBtn" class="btn btn-ghost btn-sm">
+            <i class="fa-solid fa-copy"></i> Скопировать текущие шаблоны в JSON
+          </button>
+        </div>
+
+        <div class="form-group">
+          <textarea id="jsonInputTextarea" class="form-control code-textarea" rows="10" placeholder='[
+  {
+    "name": "Овсянка с ягодами",
+    "category": "breakfast",
+    "calories": 320,
+    "protein": 12,
+    "fat": 6,
+    "carbs": 52
+  }
+]'></textarea>
+        </div>
+
+        <div id="jsonValidationAlert" class="alert hidden"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-close-modal="jsonImportModal">Отмена</button>
+        <button id="submitImportJsonBtn" class="btn btn-primary">Импортировать шаблоны</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Goal Settings Modal -->
+  <div id="goalSettingsModal" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Настройка дневных целей КБЖУ</h3>
+        <button class="modal-close-btn" data-close-modal="goalSettingsModal"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Цель по калориям (ккал):</label>
+          <input type="number" id="goalCalInput" class="form-control" min="500" max="10000" step="50">
+        </div>
+        <div class="form-row-3">
+          <div class="form-group">
+            <label>Белки (г):</label>
+            <input type="number" id="goalPInput" class="form-control" min="10" max="500" step="1">
+          </div>
+          <div class="form-group">
+            <label>Жиры (г):</label>
+            <input type="number" id="goalFInput" class="form-control" min="10" max="500" step="1">
+          </div>
+          <div class="form-group">
+            <label>Углеводы (г):</label>
+            <input type="number" id="goalCInput" class="form-control" min="10" max="1000" step="1">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-close-modal="goalSettingsModal">Отмена</button>
+        <button id="saveGoalsBtn" class="btn btn-primary">Сохранить цели</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. Backup / Restore Modal -->
+  <div id="backupModal" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Резервное копирование и восстановление</h3>
+        <button class="modal-close-btn" data-close-modal="backupModal"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="backup-option">
+          <h4>Экспорт всех данных</h4>
+          <p>Скачайте резервную копию вашего дневника, шаблонов и веса в формате JSON.</p>
+          <button id="exportBackupFileBtn" class="btn btn-outline btn-block">
+            <i class="fa-solid fa-download"></i> Скачать бэкап (JSON)
+          </button>
+        </div>
+
+        <hr class="divider">
+
+        <div class="backup-option">
+          <h4>Импорт данных из бэкапа</h4>
+          <p>Выберите файл резервной копии `.json` для восстановления данных.</p>
+          <input type="file" id="importBackupFileInput" accept=".json" class="hidden">
+          <button id="triggerImportFileBtn" class="btn btn-secondary btn-block">
+            <i class="fa-solid fa-upload"></i> Загрузить файл бэкапа
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- JavaScript App Logic -->
+  <script src="js/app.js"></script>
+</body>
+</html>

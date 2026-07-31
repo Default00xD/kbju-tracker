@@ -1155,6 +1155,23 @@ function initModals() {
       const modal = document.getElementById('backupModal');
       if (modal) modal.classList.remove('hidden');
     }
+
+    // JSON Import Trigger
+    const jsonBtn = e.target.closest('#openJsonImportBtn, #importJsonModalBtn');
+    if (jsonBtn) {
+      const modal = document.getElementById('jsonImportModal');
+      const textarea = document.getElementById('jsonInputTextarea');
+      const alertBox = document.getElementById('jsonValidationAlert');
+      if (textarea) textarea.value = '';
+      if (alertBox) alertBox.classList.add('hidden');
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    // Create Template Trigger
+    const createTplBtn = e.target.closest('#createTemplateBtn');
+    if (createTplBtn) {
+      openTemplateEditModal();
+    }
   });
 
   // Modal Sub-tabs (From Template vs Custom Entry)
@@ -1384,7 +1401,7 @@ function handleSaveTemplateSubmit() {
 // ==========================================
 
 function initJsonImportModal() {
-  const importModalBtn = document.getElementById('importJsonModalBtn');
+  const importModalBtn = document.getElementById('openJsonImportBtn') || document.getElementById('importJsonModalBtn');
   const modal = document.getElementById('jsonImportModal');
   const sampleBtn = document.getElementById('insertSampleJsonBtn');
   const copyBtn = document.getElementById('copyJsonBtn');
@@ -1392,11 +1409,13 @@ function initJsonImportModal() {
   const textarea = document.getElementById('jsonInputTextarea');
   const alertBox = document.getElementById('jsonValidationAlert');
 
-  importModalBtn.addEventListener('click', () => {
-    textarea.value = '';
-    alertBox.classList.add('hidden');
-    modal.classList.remove('hidden');
-  });
+  if (importModalBtn) {
+    importModalBtn.addEventListener('click', () => {
+      if (textarea) textarea.value = '';
+      if (alertBox) alertBox.classList.add('hidden');
+      if (modal) modal.classList.remove('hidden');
+    });
+  }
 
   const templateFileInput = document.getElementById('templateJsonFileInput');
   if (templateFileInput) {

@@ -1576,12 +1576,16 @@ class CloudDatabaseService {
   constructor(appState) {
     this.state = appState;
     this.syncKey = (localStorage.getItem('kbju_cloud_sync_key') || '').trim().toLowerCase();
-    this.recordId = localStorage.getItem(`kbju_record_id_${this.syncKey}`) || null;
-    this.apiEndpoint = 'https://api.restful-api.dev/objects';
+    this.kvdbBucket = '6arVkEW6YQfWsNCByhNw6Q'; // Dedicated free bucket for KBJU Tracker
     this.pushDebounceTimer = null;
     this.lastUpdatedAt = localStorage.getItem('kbju_last_updated_at') || '1970-01-01T00:00:00.000Z';
     this.isFetching = false;
+    this.isPushing = false;
     this.pollInterval = null;
+  }
+
+  getEndpoint() {
+    return `https://kvdb.io/${this.kvdbBucket}/kbju_sync_${this.syncKey}`;
   }
 
   initUI() {
@@ -1602,7 +1606,6 @@ class CloudDatabaseService {
         }
         this.syncKey = val;
         localStorage.setItem('kbju_cloud_sync_key', this.syncKey);
-        this.recordId = localStorage.getItem(`kbju_record_id_${this.syncKey}`) || null;
         showToast(`Облако подключено! Код: ${this.syncKey}`, 'success');
         this.pullFromCloud(true);
       });
@@ -1647,7 +1650,7 @@ class CloudDatabaseService {
   startAutoPolling() {
     if (this.pollInterval) clearInterval(this.pollInterval);
     this.pollInterval = setInterval(() => {
-      if (this.syncKey && !document.hidden) {
+      if (this.syncKey && !document.hidden && !this.isPushing) {
         this.pullFromCloud(false);
       }
     }, 4000);
@@ -1658,11 +1661,13 @@ class CloudDatabaseService {
     clearTimeout(this.pushDebounceTimer);
     this.pushDebounceTimer = setTimeout(() => {
       this.pushToCloud();
-    }, 800);
+    }, 1000);
   }
 
   async pushToCloud() {
-    if (!this.syncKey) return;
+    if (!this.syncKey || this.isFetching) return;
+    
+    this.isPushing = true;
     this.updateBadge('syncing', 'Сохранение...');
 
     const nowIso = new Date().toISOString();
@@ -1670,86 +1675,49 @@ class CloudDatabaseService {
     localStorage.setItem('kbju_last_updated_at', nowIso);
 
     const payload = {
-      name: `kbju-sync-${this.syncKey}`,
-      data: {
-        updatedAt: nowIso,
-        goals: this.state.goals,
-        templates: this.state.templates,
-        logs: this.state.logs,
-        weights: this.state.weights
-      }
+      updatedAt: nowIso,
+      goals: this.state.goals,
+      templates: this.state.templates,
+      logs: this.state.logs,
+      weights: this.state.weights
     };
 
     try {
-      if (this.recordId) {
-        // Update existing record via PUT
-        const res = await fetch(`${this.apiEndpoint}/${this.recordId}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-        if (res.ok) {
-          this.updateBadge('online', `Облако: ${this.syncKey}`);
-          return;
-        }
-      }
-
-      // If no recordId or PUT failed, create new POST
-      const createRes = await fetch(this.apiEndpoint, {
+      const res = await fetch(this.getEndpoint(), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
 
-      if (createRes.ok) {
-        const data = await createRes.json();
-        if (data.id) {
-          this.recordId = data.id;
-          localStorage.setItem(`kbju_record_id_${this.syncKey}`, data.id);
-        }
+      if (res.ok) {
         this.updateBadge('online', `Облако: ${this.syncKey}`);
+      } else {
+        throw new Error('Save failed');
       }
     } catch (e) {
       console.warn('Cloud DB push error:', e);
       this.updateBadge('offline', 'Ошибка сети');
+    } finally {
+      this.isPushing = false;
     }
   }
 
   async pullFromCloud(forceToast = false) {
-    if (!this.syncKey || this.isFetching) return false;
+    if (!this.syncKey || this.isFetching || this.isPushing) return false;
+    
     this.isFetching = true;
 
     try {
-      // If we have recordId, fetch directly by ID
-      if (this.recordId) {
-        const res = await fetch(`${this.apiEndpoint}/${this.recordId}`);
-        if (res.ok) {
-          const item = await res.json();
-          if (item && item.data) {
-            this.applyRemoteData(item.data, forceToast);
-            this.isFetching = false;
-            return true;
-          }
-        }
-      }
-
-      // Fallback: search objects by name
-      const res = await fetch(this.apiEndpoint);
+      const res = await fetch(this.getEndpoint());
       if (res.ok) {
-        const list = await res.json();
-        const userRecords = list.filter(item => item.name === `kbju-sync-${this.syncKey}`);
-        if (userRecords.length > 0) {
-          const latest = userRecords[userRecords.length - 1];
-          if (latest && latest.id) {
-            this.recordId = latest.id;
-            localStorage.setItem(`kbju_record_id_${this.syncKey}`, latest.id);
-          }
-          if (latest && latest.data) {
-            this.applyRemoteData(latest.data, forceToast);
-            this.isFetching = false;
-            return true;
-          }
+        const item = await res.json();
+        if (item && item.updatedAt) {
+          this.applyRemoteData(item, forceToast);
+          return true;
         }
+      } else if (res.status === 404) {
+        // Record doesn't exist yet, we will push our local data to create it
+        if (forceToast) this.pushToCloud();
       }
     } catch (e) {
       console.warn('Cloud DB pull error:', e);
@@ -1780,12 +1748,12 @@ class CloudDatabaseService {
         localStorage.setItem(STORAGE_KEYS.WEIGHTS, JSON.stringify(this.state.weights));
       } catch (e) {}
 
-      // Re-render UI views
+      // Re-render UI views if they exist in global scope
       try {
-        renderDashboard();
-        renderTemplatesList();
-        renderWeightPage();
-        renderCalendarAndStatsPage();
+        if (typeof renderDashboard === 'function') renderDashboard();
+        if (typeof renderTemplatesList === 'function') renderTemplatesList();
+        if (typeof renderWeightPage === 'function') renderWeightPage();
+        if (typeof renderCalendarAndStatsPage === 'function') renderCalendarAndStatsPage();
       } catch (e) {}
 
       this.updateBadge('online', `Облако: ${this.syncKey}`);

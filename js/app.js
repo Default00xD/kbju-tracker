@@ -1827,10 +1827,10 @@ function initExportDay() {
     const dateStr = state.selectedDate;
     const logs = state.logs[dateStr] || [];
     let text = '📅 Дневник за ' + dateStr + '\n';
-    text += 'Итого: ' + document.getElementById('totalCal').textContent + ' ккал |\n';
-    text += 'Б: ' + document.getElementById('totalP').textContent + 'г | ';
-    text += 'Ж: ' + document.getElementById('totalF').textContent + 'г | ';
-    text += 'У: ' + document.getElementById('totalC').textContent + 'г\n\n';
+    text += 'Итого: ' + document.getElementById('caloriesCurrent').textContent + ' ккал |\n';
+    text += 'Б: ' + document.getElementById('proteinCurrent').textContent + 'г | ';
+    text += 'Ж: ' + document.getElementById('fatCurrent').textContent + 'г | ';
+    text += 'У: ' + document.getElementById('carbsCurrent').textContent + 'г\n\n';
     const cats = [{k:'breakfast',n:'Завтрак'},{k:'lunch',n:'Обед'},{k:'dinner',n:'Ужин'},{k:'snack',n:'Перекус'}];
     cats.forEach(c => {
       const catLogs = logs.filter(l => l.category === c.k);

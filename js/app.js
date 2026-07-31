@@ -1474,12 +1474,12 @@ function initBackup() {
   const backupModal = document.getElementById('backupModal');
   const exportBtn = document.getElementById('exportBackupFileBtn');
   const triggerImportBtn = document.getElementById('triggerImportFileBtn');
-  const fileInput = document.getElementById('importBackupFileInput');
+  const textarea = document.getElementById('importBackupTextarea');
 
   if (exportBtn) {
     exportBtn.addEventListener('click', () => {
       const fullState = {
-        version: '1.0',
+        version: '6.0',
         exportedAt: new Date().toISOString(),
         goals: state.goals,
         templates: state.templates,
@@ -1487,51 +1487,48 @@ function initBackup() {
         weights: state.weights
       };
 
-      const blob = new Blob([JSON.stringify(fullState, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `kbju_backup_${state.getTodayIso()}.json`;
-      a.click();
-      URL.revokeObjectURL(url);
+      const jsonStr = JSON.stringify(fullState, null, 2);
+      if (textarea) textarea.value = jsonStr;
 
-      showToast('Резервная копия скачана!', 'success');
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(jsonStr).then(() => {
+          showToast('Текст бэкапа скопирован в буфер обмена!', 'success');
+        }).catch(() => {
+          showToast('Текст бэкапа помещен в текстовое поле ниже!', 'info');
+        });
+      } else {
+        showToast('Текст бэкапа помещен в текстовое поле ниже!', 'info');
+      }
     });
   }
 
-  if (triggerImportBtn && fileInput) {
+  if (triggerImportBtn) {
     triggerImportBtn.addEventListener('click', () => {
-      fileInput.click();
-    });
-  }
+      const rawText = (textarea ? textarea.value : '').trim();
+      if (!rawText) {
+        showToast('Вставьте JSON текст бэкапа в поле!', 'warning');
+        return;
+      }
 
-  if (fileInput) {
-    fileInput.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
+      try {
+        const importedData = JSON.parse(rawText);
+        if (importedData.goals) state.goals = importedData.goals;
+        if (importedData.templates) state.templates = importedData.templates;
+        if (importedData.logs) state.logs = importedData.logs;
+        if (importedData.weights) state.weights = importedData.weights;
 
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        try {
-          const importedData = JSON.parse(event.target.result);
-          if (importedData.goals) state.goals = importedData.goals;
-          if (importedData.templates) state.templates = importedData.templates;
-          if (importedData.logs) state.logs = importedData.logs;
-          if (importedData.weights) state.weights = importedData.weights;
+        state.saveToStorage(STORAGE_KEYS.GOALS, state.goals);
+        state.saveToStorage(STORAGE_KEYS.TEMPLATES, state.templates);
+        state.saveToStorage(STORAGE_KEYS.LOGS, state.logs);
+        state.saveToStorage(STORAGE_KEYS.WEIGHTS, state.weights);
 
-          state.saveToStorage(STORAGE_KEYS.GOALS, state.goals);
-          state.saveToStorage(STORAGE_KEYS.TEMPLATES, state.templates);
-          state.saveToStorage(STORAGE_KEYS.LOGS, state.logs);
-          state.saveToStorage(STORAGE_KEYS.WEIGHTS, state.weights);
-
-          if (backupModal) backupModal.classList.add('hidden');
-          renderDashboard();
-          showToast('Все данные успешно восстановлены из бэкапа!', 'success');
-        } catch (err) {
-          alert('Ошибка при чтении файла бэкапа: ' + err.message);
-        }
-      };
-      reader.readAsText(file);
+        if (backupModal) backupModal.classList.add('hidden');
+        renderDashboard();
+        renderTemplatesList();
+        showToast('Все данные успешно восстановлены из JSON!', 'success');
+      } catch (err) {
+        alert('Ошибка в синтаксисе JSON: ' + err.message);
+      }
     });
   }
 }

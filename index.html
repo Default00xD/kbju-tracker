@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=12.0">
+  <link rel="stylesheet" href="css/styles.css?v=13.0">
 </head>
 <body>
   <div id="app" class="app-container">
@@ -303,7 +303,7 @@
         <div class="card settings-toolbar-card">
           <div class="toolbar-header" style="display: flex; justify-content: space-between; align-items: center;">
             <h3><i class="fa-solid fa-gear"></i> Настройки приложения</h3>
-            <span class="app-version-badge" style="font-size: 0.85rem; color: var(--text-muted); background: var(--bg-hover); padding: 2px 8px; border-radius: 12px;">v12.0</span>
+            <span class="app-version-badge" style="font-size: 0.85rem; color: var(--text-muted); background: var(--bg-hover); padding: 2px 8px; border-radius: 12px;">v13.0</span>
           </div>
           <div class="toolbar-actions-grid">
             <button id="themeToggleBtn" class="btn btn-secondary">
@@ -457,15 +457,30 @@
             </select>
           </div>
 
-          <div class="form-group">
-            <label>Порция (коэффициент):</label>
-            <div class="portion-input-row">
-              <select id="modalPortionFactor" class="form-control">
-                <option value="1">1.0x (Стандарт)</option>
-                <option value="0.5">0.5x (Половина)</option>
-                <option value="1.5">1.5x (Полторы)</option>
-                <option value="2">2.0x (Двойная)</option>
-              </select>
+          <div class="form-group" style="margin-bottom: 1.5rem;">
+            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.75rem;">
+              <label style="margin:0;">Порция (коэффициент):</label>
+              <div id="coeffDisplay" style="font-size: 1.5rem; font-weight: 800; color: var(--primary); background: var(--bg-hover); padding: 4px 12px; border-radius: 8px;">1.0x</div>
+            </div>
+            
+            <div class="slider-container" style="background: var(--bg-secondary); border-radius: 12px; padding: 1rem; border: 1px solid var(--border);">
+              
+              <div class="slider-group" style="margin-bottom: 1rem;">
+                <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:var(--text-muted); margin-bottom:0.5rem; font-weight: 600;">
+                  <span>Единицы (0-10)</span>
+                  <span id="unitsValueVal">1</span>
+                </div>
+                <input type="range" id="coeffUnits" class="styled-slider" min="0" max="10" step="1" value="1">
+              </div>
+
+              <div class="slider-group">
+                <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:var(--text-muted); margin-bottom:0.5rem; font-weight: 600;">
+                  <span>Десятые (0.0-0.9)</span>
+                  <span id="tenthsValueVal">.0</span>
+                </div>
+                <input type="range" id="coeffTenths" class="styled-slider tenths-slider" min="0" max="9" step="1" value="0">
+              </div>
+              
             </div>
           </div>
 
@@ -698,6 +713,6 @@
   </nav>
 
   <!-- JavaScript App Logic -->
-  <script src="js/app.js?v=12.0"></script>
+  <script src="js/app.js?v=13.0"></script>
 </body>
 </html>

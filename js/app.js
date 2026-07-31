@@ -225,24 +225,30 @@ function initTheme() {
   document.documentElement.setAttribute('data-theme', state.theme);
   updateThemeIcon();
 
-  document.getElementById('themeToggleBtn').addEventListener('click', () => {
-    state.theme = state.theme === 'dark' ? 'light' : 'dark';
-    document.documentElement.setAttribute('data-theme', state.theme);
-    state.saveToStorage(STORAGE_KEYS.THEME, state.theme);
-    updateThemeIcon();
-    // Redraw canvases with new theme colors
-    renderWeightChart();
-    renderNutritionChart();
+  document.addEventListener('click', (e) => {
+    const themeBtn = e.target.closest('#themeToggleBtn');
+    if (themeBtn) {
+      state.theme = state.theme === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', state.theme);
+      state.saveToStorage(STORAGE_KEYS.THEME, state.theme);
+      updateThemeIcon();
+      try {
+        renderWeightChart();
+        renderNutritionChart();
+      } catch (err) {}
+    }
   });
 }
 
 function updateThemeIcon() {
-  const icon = document.querySelector('#themeToggleBtn i');
-  if (state.theme === 'dark') {
-    icon.className = 'fa-solid fa-sun';
-  } else {
-    icon.className = 'fa-solid fa-moon';
-  }
+  const icons = document.querySelectorAll('#themeToggleBtn i');
+  icons.forEach(icon => {
+    if (state.theme === 'dark') {
+      icon.className = 'fa-solid fa-sun';
+    } else {
+      icon.className = 'fa-solid fa-moon';
+    }
+  });
 }
 
 // --- Toast Notifications ---
@@ -1442,68 +1448,69 @@ function initJsonImportModal() {
 }
 
 function initBackup() {
-  const backupBtn = document.getElementById('backupBtn');
   const backupModal = document.getElementById('backupModal');
   const exportBtn = document.getElementById('exportBackupFileBtn');
   const triggerImportBtn = document.getElementById('triggerImportFileBtn');
   const fileInput = document.getElementById('importBackupFileInput');
 
-  backupBtn.addEventListener('click', () => {
-    backupModal.classList.remove('hidden');
-  });
+  if (exportBtn) {
+    exportBtn.addEventListener('click', () => {
+      const fullState = {
+        version: '1.0',
+        exportedAt: new Date().toISOString(),
+        goals: state.goals,
+        templates: state.templates,
+        logs: state.logs,
+        weights: state.weights
+      };
 
-  exportBtn.addEventListener('click', () => {
-    const fullState = {
-      version: '1.0',
-      exportedAt: new Date().toISOString(),
-      goals: state.goals,
-      templates: state.templates,
-      logs: state.logs,
-      weights: state.weights
-    };
+      const blob = new Blob([JSON.stringify(fullState, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `kbju_backup_${state.getTodayIso()}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
 
-    const blob = new Blob([JSON.stringify(fullState, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `kbju_backup_${state.getTodayIso()}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
+      showToast('Резервная копия скачана!', 'success');
+    });
+  }
 
-    showToast('Резервная копия скачана!', 'success');
-  });
+  if (triggerImportBtn && fileInput) {
+    triggerImportBtn.addEventListener('click', () => {
+      fileInput.click();
+    });
+  }
 
-  triggerImportBtn.addEventListener('click', () => {
-    fileInput.click();
-  });
+  if (fileInput) {
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
 
-  fileInput.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const importedData = JSON.parse(event.target.result);
+          if (importedData.goals) state.goals = importedData.goals;
+          if (importedData.templates) state.templates = importedData.templates;
+          if (importedData.logs) state.logs = importedData.logs;
+          if (importedData.weights) state.weights = importedData.weights;
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      try {
-        const importedData = JSON.parse(event.target.result);
-        if (importedData.goals) state.goals = importedData.goals;
-        if (importedData.templates) state.templates = importedData.templates;
-        if (importedData.logs) state.logs = importedData.logs;
-        if (importedData.weights) state.weights = importedData.weights;
+          state.saveToStorage(STORAGE_KEYS.GOALS, state.goals);
+          state.saveToStorage(STORAGE_KEYS.TEMPLATES, state.templates);
+          state.saveToStorage(STORAGE_KEYS.LOGS, state.logs);
+          state.saveToStorage(STORAGE_KEYS.WEIGHTS, state.weights);
 
-        state.saveToStorage(STORAGE_KEYS.GOALS, state.goals);
-        state.saveToStorage(STORAGE_KEYS.TEMPLATES, state.templates);
-        state.saveToStorage(STORAGE_KEYS.LOGS, state.logs);
-        state.saveToStorage(STORAGE_KEYS.WEIGHTS, state.weights);
-
-        backupModal.classList.add('hidden');
-        renderDashboard();
-        showToast('Все данные успешно восстановлены из бэкапа!', 'success');
-      } catch (err) {
-        alert('Ошибка при чтении файла бэкапа: ' + err.message);
-      }
-    };
-    reader.readAsText(file);
-  });
+          if (backupModal) backupModal.classList.add('hidden');
+          renderDashboard();
+          showToast('Все данные успешно восстановлены из бэкапа!', 'success');
+        } catch (err) {
+          alert('Ошибка при чтении файла бэкапа: ' + err.message);
+        }
+      };
+      reader.readAsText(file);
+    });
+  }
 }
 
 // --- Helper Functions ---

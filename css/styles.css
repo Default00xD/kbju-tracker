@@ -1244,6 +1244,67 @@ h1, h2, h3, h4, .logo-title {
   gap: 0.75rem;
 }
 
+/* Cloud Sync Card */
+.cloud-sync-card {
+  margin-bottom: 1.25rem;
+  padding: 1.25rem;
+}
+
+.cloud-sync-header .title-with-badge {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.5rem;
+}
+
+.cloud-sync-header h3 {
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+.sync-badge {
+  font-size: 0.775rem;
+  font-weight: 700;
+  padding: 0.25rem 0.65rem;
+  border-radius: var(--radius-full);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.sync-badge.online {
+  background-color: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.sync-badge.offline {
+  background-color: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.cloud-sync-desc {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+
+.cloud-sync-form {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+@media (max-width: 600px) {
+  .cloud-sync-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
 /* --- MODALS --- */
 .modal-backdrop {
   position: fixed;

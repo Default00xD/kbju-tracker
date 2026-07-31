@@ -1111,6 +1111,28 @@ function renderNutritionChart() {
 // ==========================================
 
 function initModals() {
+  function attachCalorieCalculator(calId, pId, fId, cId) {
+    const calInput = document.getElementById(calId);
+    const pInput = document.getElementById(pId);
+    const fInput = document.getElementById(fId);
+    const cInput = document.getElementById(cId);
+    if (!calInput || !pInput || !fInput || !cInput) return;
+
+    const calculate = () => {
+      const p = parseFloat(pInput.value) || 0;
+      const f = parseFloat(fInput.value) || 0;
+      const c = parseFloat(cInput.value) || 0;
+      calInput.value = Math.round(p * 4 + f * 9 + c * 4);
+    };
+
+    pInput.addEventListener('input', calculate);
+    fInput.addEventListener('input', calculate);
+    cInput.addEventListener('input', calculate);
+  }
+
+  attachCalorieCalculator('customMealCal', 'customMealP', 'customMealF', 'customMealC');
+  attachCalorieCalculator('tplCalInput', 'tplPInput', 'tplFInput', 'tplCInput');
+
   // Global Delegate listener for ALL modal close buttons (X, Cancel, Backdrop)
   document.addEventListener('click', (e) => {
     const closeBtn = e.target.closest('[data-close-modal]');

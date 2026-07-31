@@ -86,6 +86,9 @@ class AppState {
   saveToStorage(key, data) {
     try {
       localStorage.setItem(key, JSON.stringify(data));
+      if (window.cloudSync && key !== STORAGE_KEYS.THEME) {
+        window.cloudSync.debouncedPushToCloud();
+      }
     } catch (e) {
       console.error(`Failed to save ${key} to storage:`, e);
     }
@@ -222,14 +225,16 @@ const state = new AppState();
 // ==========================================
 
 document.addEventListener('DOMContentLoaded', () => {
-  initTheme();
-  initNavigation();
-  initDashboard();
-  initTemplatesPage();
-  initWeightTracker();
-  initCalendarAndStats();
-  initModals();
-  initBackup();
+  window.cloudSync = new CloudDatabaseService(state);
+  try { window.cloudSync.initUI(); } catch (e) { console.error(e); }
+  try { initTheme(); } catch (e) { console.error(e); }
+  try { initNavigation(); } catch (e) { console.error(e); }
+  try { initDashboard(); } catch (e) { console.error(e); }
+  try { initTemplatesPage(); } catch (e) { console.error(e); }
+  try { initWeightTracker(); } catch (e) { console.error(e); }
+  try { initCalendarAndStats(); } catch (e) { console.error(e); }
+  try { initModals(); } catch (e) { console.error(e); }
+  try { initBackup(); } catch (e) { console.error(e); }
 });
 
 // --- Theme Management ---
@@ -1549,4 +1554,150 @@ function escapeHtml(str) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;');
+}
+
+// ==========================================
+// 8. CLOUD DATABASE SYNC SERVICE
+// ==========================================
+
+class CloudDatabaseService {
+  constructor(appState) {
+    this.state = appState;
+    this.syncKey = localStorage.getItem('kbju_cloud_sync_key') || '';
+    this.apiEndpoint = 'https://api.restful-api.dev/objects';
+    this.pushDebounceTimer = null;
+  }
+
+  initUI() {
+    const input = document.getElementById('cloudSyncKeyInput');
+    const connectBtn = document.getElementById('connectCloudBtn');
+    const syncNowBtn = document.getElementById('syncNowBtn');
+
+    if (input && this.syncKey) {
+      input.value = this.syncKey;
+      this.pullFromCloud();
+    }
+
+    if (connectBtn) {
+      connectBtn.addEventListener('click', () => {
+        const val = (input ? input.value : '').trim();
+        if (!val) {
+          showToast('Введите ваш код доступа (например, 7788)', 'warning');
+          return;
+        }
+        this.syncKey = val.toLowerCase();
+        localStorage.setItem('kbju_cloud_sync_key', this.syncKey);
+        showToast(`Облако подключено! Код: ${this.syncKey}`, 'success');
+        this.pullFromCloud();
+      });
+    }
+
+    if (syncNowBtn) {
+      syncNowBtn.addEventListener('click', () => {
+        if (!this.syncKey) {
+          showToast('Сначала введите ваш код синхронизации', 'warning');
+          return;
+        }
+        showToast('Синхронизация с облаком...', 'info');
+        this.pullFromCloud().then(loaded => {
+          if (!loaded) this.pushToCloud();
+          showToast('Синхронизация завершена!', 'success');
+        });
+      });
+    }
+
+    if (this.syncKey) {
+      this.updateBadge('online', `Облако: ${this.syncKey}`);
+    } else {
+      this.updateBadge('offline', 'Локально');
+    }
+  }
+
+  debouncedPushToCloud() {
+    if (!this.syncKey) return;
+    clearTimeout(this.pushDebounceTimer);
+    this.pushDebounceTimer = setTimeout(() => {
+      this.pushToCloud();
+    }, 1000);
+  }
+
+  async pushToCloud() {
+    if (!this.syncKey) return;
+    this.updateBadge('syncing', 'Сохранение...');
+
+    const payload = {
+      name: `kbju-sync-${this.syncKey}`,
+      data: {
+        updatedAt: new Date().toISOString(),
+        goals: this.state.goals,
+        templates: this.state.templates,
+        logs: this.state.logs,
+        weights: this.state.weights
+      }
+    };
+
+    try {
+      const res = await fetch(this.apiEndpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (res.ok) {
+        this.updateBadge('online', `Облако: ${this.syncKey}`);
+      }
+    } catch (e) {
+      console.warn('Cloud DB push error:', e);
+      this.updateBadge('offline', 'Ошибка сети');
+    }
+  }
+
+  async pullFromCloud() {
+    if (!this.syncKey) return false;
+    this.updateBadge('syncing', 'Загрузка...');
+    try {
+      const res = await fetch(this.apiEndpoint);
+      if (res.ok) {
+        const list = await res.json();
+        const userRecords = list.filter(item => item.name === `kbju-sync-${this.syncKey}`);
+        if (userRecords.length > 0) {
+          const latest = userRecords[userRecords.length - 1];
+          if (latest && latest.data) {
+            const d = latest.data;
+            if (d.goals) this.state.goals = d.goals;
+            if (d.templates) this.state.templates = d.templates;
+            if (d.logs) this.state.logs = d.logs;
+            if (d.weights) this.state.weights = d.weights;
+
+            this.state.saveToStorage(STORAGE_KEYS.GOALS, this.state.goals);
+            this.state.saveToStorage(STORAGE_KEYS.TEMPLATES, this.state.templates);
+            this.state.saveToStorage(STORAGE_KEYS.LOGS, this.state.logs);
+            this.state.saveToStorage(STORAGE_KEYS.WEIGHTS, this.state.weights);
+
+            renderDashboard();
+            this.updateBadge('online', `Облако: ${this.syncKey}`);
+            return true;
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('Cloud DB pull error:', e);
+    }
+    this.updateBadge('online', `Облако: ${this.syncKey}`);
+    return false;
+  }
+
+  updateBadge(status, text) {
+    const badge = document.getElementById('cloudSyncStatusBadge');
+    if (!badge) return;
+    if (status === 'online') {
+      badge.className = 'sync-badge online';
+      badge.innerHTML = `<i class="fa-solid fa-cloud"></i> ${escapeHtml(text)}`;
+    } else if (status === 'syncing') {
+      badge.className = 'sync-badge offline';
+      badge.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ${escapeHtml(text)}`;
+    } else {
+      badge.className = 'sync-badge offline';
+      badge.innerHTML = `<i class="fa-solid fa-hard-drive"></i> ${escapeHtml(text)}`;
+    }
+  }
 }

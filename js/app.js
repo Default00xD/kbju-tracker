@@ -7,15 +7,15 @@
 // 1. STATE & LOCALSTORAGE MANAGEMENT
 // ==========================================
 const STORAGE_KEYS = {
-  INITIALIZED: 'kbju_initialized_v3',
-  GOALS: 'kbju_goals_v3',
-  TEMPLATES: 'kbju_templates_v4',
-  LOGS: 'kbju_logs_v3',
-  WEIGHTS: 'kbju_weights_v3',
-  THEME: 'kbju_theme_v3'
+  INITIALIZED: 'kbju_initialized_v5',
+  GOALS: 'kbju_goals_v5',
+  TEMPLATES: 'kbju_templates_v5',
+  LOGS: 'kbju_logs_v5',
+  WEIGHTS: 'kbju_weights_v5',
+  THEME: 'kbju_theme_v5'
 };
 
-// Custom User Templates Data
+// Default Goals (no sample templates)
 const DEFAULT_GOALS = {
   calories: 2000,
   protein: 130,
@@ -23,27 +23,7 @@ const DEFAULT_GOALS = {
   carbs: 220
 };
 
-const DEFAULT_TEMPLATES = [
-  // Завтрак
-  { id: 'tpl-1', name: '3 жареных яйца + кусок хлеба', category: 'breakfast', calories: 355, protein: 23.5, fat: 22.5, carbs: 15.2 },
-
-  // Обед (гарниры и мясо отдельными шаблонами)
-  { id: 'tpl-2', name: 'Рис вареный (300г)', category: 'lunch', calories: 390, protein: 8, fat: 1, carbs: 84 },
-  { id: 'tpl-3', name: 'Гречка вареная (300г)', category: 'lunch', calories: 330, protein: 12, fat: 3, carbs: 60 },
-  { id: 'tpl-4', name: 'Макароны вареные (300г)', category: 'lunch', calories: 420, protein: 14, fat: 2, carbs: 82 },
-  { id: 'tpl-5', name: 'Куриное филе (200г)', category: 'lunch', calories: 330, protein: 62, fat: 7, carbs: 0 },
-  { id: 'tpl-6', name: 'Свиной окорок (200г)', category: 'lunch', calories: 460, protein: 42, fat: 32, carbs: 0 },
-
-  // Ужин (гарниры и мясо отдельными шаблонами)
-  { id: 'tpl-7', name: 'Рис вареный (300г)', category: 'dinner', calories: 390, protein: 8, fat: 1, carbs: 84 },
-  { id: 'tpl-8', name: 'Гречка вареная (300г)', category: 'dinner', calories: 330, protein: 12, fat: 3, carbs: 60 },
-  { id: 'tpl-9', name: 'Макароны вареные (300г)', category: 'dinner', calories: 420, protein: 14, fat: 2, carbs: 82 },
-  { id: 'tpl-10', name: 'Куриное филе (200г)', category: 'dinner', calories: 330, protein: 62, fat: 7, carbs: 0 },
-  { id: 'tpl-11', name: 'Свиной окорок (200г)', category: 'dinner', calories: 460, protein: 42, fat: 32, carbs: 0 },
-
-  // Перекус
-  { id: 'tpl-12', name: '20г соевый изолят + молоко 300мл 2.5%', category: 'snack', calories: 232, protein: 27, fat: 8, carbs: 14.6 }
-];
+const DEFAULT_TEMPLATES = [];
 
 class AppState {
   constructor() {
@@ -625,7 +605,7 @@ window.confirmDeleteTemplate = function(tplId) {
 function initWeightTracker() {
   const minusBtn = document.getElementById('weightMinusBtn');
   const plusBtn = document.getElementById('weightPlusBtn');
-  const weightInput = document.getElementById('weightValueInput');
+  const weightInput = document.getElementById('weightInput');
   const saveBtn = document.getElementById('saveWeightBtn');
 
   minusBtn.addEventListener('click', () => {

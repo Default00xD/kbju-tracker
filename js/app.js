@@ -452,7 +452,7 @@ function renderMealCategoryItems(category) {
   container.innerHTML = categoryItems.map(item => `
     <div class="meal-item-row">
       <div class="meal-item-info">
-        <span class="meal-item-name">${escapeHtml(item.name)} ${item.grams ? `<small style="color:var(--text-muted)">(${item.grams}г)</small>` : ''}</span>
+        <span class="meal-item-name">${escapeHtml(item.name)} ${item.grams ? `<small style="color:var(--text-muted)">(${item.grams}г)</small>` : ''} ${(item.portionFactor && item.portionFactor !== 1) ? `<small style="color:var(--text-muted); margin-left: 4px;">x${item.portionFactor}</small>` : ''}</span>
         <div class="meal-item-kbju">
           <span class="tag-cal">${Math.round(item.calories)} ккал</span>
           <span>Б: ${item.protein.toFixed(1)}г</span>

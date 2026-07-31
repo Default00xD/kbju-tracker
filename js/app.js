@@ -1207,38 +1207,50 @@ function initModals() {
 
   // Template Select Preview change
   const modalTemplateSelect = document.getElementById('modalTemplateSelect');
-  if (modalTemplateSelect) {
-    modalTemplateSelect.addEventListener('change', (e) => {
-      const tplId = e.target.value;
-      const previewBox = document.getElementById('templatePreviewBox');
-      if (!previewBox) return;
+  function updateTemplatePreview() {
+    const tplId = modalTemplateSelect ? modalTemplateSelect.value : '';
+    const previewBox = document.getElementById('templatePreviewBox');
+    if (!previewBox) return;
 
-      if (!tplId) {
-        previewBox.classList.add('hidden');
-        return;
-      }
+    if (!tplId) {
+      previewBox.classList.add('hidden');
+      return;
+    }
 
-      const tpl = state.templates.find(t => t.id === tplId);
-      if (tpl) {
-        const portionSelect = document.getElementById('modalPortionFactor');
-        if (portionSelect) portionSelect.value = '1.0';
+    const tpl = state.templates.find(t => t.id === tplId);
+    if (tpl) {
+      const units = parseInt(document.getElementById('coeffUnits').value) || 0;
+      const tenths = parseInt(document.getElementById('coeffTenths').value) || 0;
+      const factor = units + (tenths / 10);
+      
+      document.getElementById('coeffDisplay').textContent = factor.toFixed(1) + 'x';
+      document.getElementById('unitsValueVal').textContent = units;
+      document.getElementById('tenthsValueVal').textContent = '.' + tenths;
 
-        const nameElem = document.getElementById('prevTemplateName');
-        const calElem = document.getElementById('prevTemplateCal');
-        const pElem = document.getElementById('prevTemplateP');
-        const fElem = document.getElementById('prevTemplateF');
-        const cElem = document.getElementById('prevTemplateC');
+      const nameElem = document.getElementById('prevTemplateName');
+      const calElem = document.getElementById('prevTemplateCal');
+      const pElem = document.getElementById('prevTemplateP');
+      const fElem = document.getElementById('prevTemplateF');
+      const cElem = document.getElementById('prevTemplateC');
 
-        if (nameElem) nameElem.textContent = tpl.name;
-        if (calElem) calElem.textContent = `${Math.round(tpl.calories)} ккал`;
-        if (pElem) pElem.textContent = `Б: ${tpl.protein}г`;
-        if (fElem) fElem.textContent = `Ж: ${tpl.fat}г`;
-        if (cElem) cElem.textContent = `У: ${tpl.carbs}г`;
+      if (nameElem) nameElem.textContent = tpl.name;
+      if (calElem) calElem.textContent = `${Math.round(tpl.calories * factor * 10) / 10} ккал`;
+      if (pElem) pElem.textContent = `Б: ${Math.round(tpl.protein * factor * 10) / 10}г`;
+      if (fElem) fElem.textContent = `Ж: ${Math.round(tpl.fat * factor * 10) / 10}г`;
+      if (cElem) cElem.textContent = `У: ${Math.round(tpl.carbs * factor * 10) / 10}г`;
 
-        previewBox.classList.remove('hidden');
-      }
-    });
+      previewBox.classList.remove('hidden');
+    }
   }
+
+  if (modalTemplateSelect) {
+    modalTemplateSelect.addEventListener('change', updateTemplatePreview);
+  }
+
+  const uSlider = document.getElementById('coeffUnits');
+  const tSlider = document.getElementById('coeffTenths');
+  if (uSlider) uSlider.addEventListener('input', updateTemplatePreview);
+  if (tSlider) tSlider.addEventListener('input', updateTemplatePreview);
 
   // JSON Import Modal init
   initJsonImportModal();
@@ -1263,7 +1275,11 @@ function openAddMealModal(category) {
   });
 
   document.getElementById('templatePreviewBox').classList.add('hidden');
-  document.getElementById('modalPortionFactor').value = '1.0';
+  document.getElementById('coeffUnits').value = '1';
+  document.getElementById('coeffTenths').value = '0';
+  document.getElementById('coeffDisplay').textContent = '1.0x';
+  document.getElementById('unitsValueVal').textContent = '1';
+  document.getElementById('tenthsValueVal').textContent = '.0';
   document.getElementById('customMealName').value = '';
   document.getElementById('customMealCal').value = '';
   document.getElementById('customMealP').value = '';
@@ -1278,7 +1294,9 @@ function handleAddMealSubmit() {
 
   if (isFromTemplate) {
     const tplId = document.getElementById('modalTemplateSelect').value;
-    const factor = parseFloat(document.getElementById('modalPortionFactor').value) || 1.0;
+    const units = parseInt(document.getElementById('coeffUnits').value) || 0;
+    const tenths = parseInt(document.getElementById('coeffTenths').value) || 0;
+    const factor = units + (tenths / 10);
 
     if (!tplId) {
       showToast('Пожалуйста, выберите шаблон', 'warning');

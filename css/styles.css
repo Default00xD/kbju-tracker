@@ -1444,16 +1444,18 @@ h1, h2, h3, h4, .logo-title {
   font-size: 0.9rem;
 }
 
-.preview-kbju {
+.preview-kbju, .template-macros, .tags-group {
   display: flex;
-  gap: 0.4rem;
+  flex-wrap: wrap;
+  gap: 0.35rem;
 }
 
 .tag {
   font-size: 0.725rem;
-  padding: 0.15rem 0.4rem;
+  padding: 0.2rem 0.5rem;
   border-radius: var(--radius-sm);
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .tag-cal { background: rgba(255, 107, 53, 0.15); color: var(--calories-color); }

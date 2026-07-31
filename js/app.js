@@ -7,11 +7,12 @@
 // 1. STATE & LOCALSTORAGE MANAGEMENT
 // ==========================================
 const STORAGE_KEYS = {
-  GOALS: 'kbju_goals_v1',
+  INITIALIZED: 'kbju_initialized_v3',
+  GOALS: 'kbju_goals_v3',
   TEMPLATES: 'kbju_templates_v4',
-  LOGS: 'kbju_logs_v1',
-  WEIGHTS: 'kbju_weights_v1',
-  THEME: 'kbju_theme_v1'
+  LOGS: 'kbju_logs_v3',
+  WEIGHTS: 'kbju_weights_v3',
+  THEME: 'kbju_theme_v3'
 };
 
 // Custom User Templates Data
@@ -51,20 +52,31 @@ class AppState {
     this.currentCalendarMonth = new Date().getMonth();
     this.weightRange = '14'; // 14, 30, all
 
+    const isInitialized = localStorage.getItem(STORAGE_KEYS.INITIALIZED);
+
     this.goals = this.loadFromStorage(STORAGE_KEYS.GOALS, DEFAULT_GOALS);
     this.templates = this.loadFromStorage(STORAGE_KEYS.TEMPLATES, DEFAULT_TEMPLATES);
     this.logs = this.loadFromStorage(STORAGE_KEYS.LOGS, {});
     this.weights = this.loadFromStorage(STORAGE_KEYS.WEIGHTS, {});
     this.theme = this.loadFromStorage(STORAGE_KEYS.THEME, 'dark');
 
-    // Ensure sample log for today if empty
-    this.initSampleLogsIfEmpty();
+    if (!isInitialized) {
+      localStorage.setItem(STORAGE_KEYS.INITIALIZED, 'true');
+      this.saveToStorage(STORAGE_KEYS.GOALS, this.goals);
+      this.saveToStorage(STORAGE_KEYS.TEMPLATES, this.templates);
+      this.saveToStorage(STORAGE_KEYS.LOGS, this.logs);
+      this.saveToStorage(STORAGE_KEYS.WEIGHTS, this.weights);
+      this.saveToStorage(STORAGE_KEYS.THEME, this.theme);
+    }
   }
 
   loadFromStorage(key, fallback) {
     try {
       const data = localStorage.getItem(key);
-      return data ? JSON.parse(data) : fallback;
+      if (data !== null && data !== undefined) {
+        return JSON.parse(data);
+      }
+      return fallback;
     } catch (e) {
       console.error(`Failed to load ${key} from storage:`, e);
       return fallback;

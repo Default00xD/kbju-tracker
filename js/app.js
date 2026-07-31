@@ -130,7 +130,7 @@ class AppState {
 
   // Template methods
   addTemplate(template) {
-    template.id = 'tpl-' + Date.now();
+    template.id = 'tpl-' + Date.now() + '-' + Math.random().toString(36).substr(2, 6);
     this.templates.push(template);
     this.saveToStorage(STORAGE_KEYS.TEMPLATES, this.templates);
     return template;

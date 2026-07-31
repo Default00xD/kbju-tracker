@@ -1447,6 +1447,9 @@ h1, h2, h3, h4, .logo-title {
 }
 
 .form-control {
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
   background-color: var(--bg-surface-elevated);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);

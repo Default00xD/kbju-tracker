@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=6.0">
+  <link rel="stylesheet" href="css/styles.css?v=7.0">
 </head>
 <body>
   <div id="app" class="app-container">
@@ -570,34 +570,30 @@
   <div id="jsonImportModal" class="modal-backdrop hidden">
     <div class="modal-card modal-lg">
       <div class="modal-header">
-        <h3>Массовая загрузка / экспорт шаблонов JSON</h3>
+        <h3>Импорт шаблонов из JSON текста</h3>
         <button class="modal-close-btn" data-close-modal="jsonImportModal"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <div class="modal-body">
-        <p class="modal-desc">Выберите `.json` файл с устройства или вставьте шаблоны вручную в текстовое поле ниже.</p>
+        <p class="modal-desc">Вставьте скопированный JSON текст с блюдами в поле ниже и нажмите <b>«Загрузить шаблоны»</b>.</p>
 
         <div class="json-tools-bar" style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem; align-items: center;">
-          <input type="file" id="templateJsonFileInput" accept=".json,application/json" style="position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none;">
-          <label for="templateJsonFileInput" class="btn btn-primary btn-sm" style="cursor: pointer; display: inline-flex; align-items: center; gap: 0.4rem;">
-            <i class="fa-solid fa-file-arrow-up"></i> Выбрать .json файл
-          </label>
-          <button id="insertSampleJsonBtn" class="btn btn-ghost btn-sm">
-            <i class="fa-solid fa-code"></i> Пример JSON
+          <button id="insertSampleJsonBtn" class="btn btn-primary btn-sm">
+            <i class="fa-solid fa-code"></i> Вставить пример JSON
           </button>
           <button id="copyJsonBtn" class="btn btn-ghost btn-sm">
-            <i class="fa-solid fa-copy"></i> Скопировать шаблоны
+            <i class="fa-solid fa-copy"></i> Скопировать текущие шаблоны
           </button>
         </div>
 
         <div class="form-group">
           <textarea id="jsonInputTextarea" class="form-control code-textarea" rows="10" placeholder='[
   {
-    "name": "Овсянка с бананом",
+    "name": "Яйцо жареное 1шт",
     "category": "breakfast",
-    "calories": 320,
-    "protein": 12,
-    "fat": 6,
-    "carbs": 52
+    "calories": 110,
+    "protein": 6.5,
+    "fat": 9,
+    "carbs": 0.5
   }
 ]'></textarea>
         </div>
@@ -655,21 +651,23 @@
       <div class="modal-body">
         <div class="backup-option">
           <h4>Экспорт данных</h4>
-          <p>Скачайте резервную копию вашего дневника, шаблонов и веса в формате JSON.</p>
+          <p>Скопируйте весь текст бэкапа вашего дневника, шаблонов и веса.</p>
           <button id="exportBackupFileBtn" class="btn btn-outline btn-block">
-            <i class="fa-solid fa-download"></i> Скачать бэкап (JSON)
+            <i class="fa-solid fa-copy"></i> Скопировать бэкап в буфер (JSON)
           </button>
         </div>
 
         <hr class="divider">
 
         <div class="backup-option">
-          <h4>Импорт данных из бэкапа</h4>
-          <p>Выберите файл резервной копии `.json` для восстановления данных.</p>
-          <input type="file" id="importBackupFileInput" accept=".json,application/json" style="position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none;">
-          <label for="importBackupFileInput" class="btn btn-secondary btn-block" style="cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
-            <i class="fa-solid fa-upload"></i> Выбрать и загрузить файл бэкапа (.json)
-          </label>
+          <h4>Восстановление из JSON текста</h4>
+          <p>Вставьте скопированный текст бэкапа ниже и нажмите «Восстановить»:</p>
+          <div class="form-group" style="margin-top: 0.5rem;">
+            <textarea id="importBackupTextarea" class="form-control code-textarea" rows="5" placeholder='{"goals": {...}, "templates": [...]}'></textarea>
+          </div>
+          <button id="triggerImportFileBtn" class="btn btn-secondary btn-block">
+            <i class="fa-solid fa-rotate-left"></i> Восстановить данные
+          </button>
         </div>
       </div>
     </div>
@@ -699,6 +697,6 @@
   </nav>
 
   <!-- JavaScript App Logic -->
-  <script src="js/app.js?v=6.0"></script>
+  <script src="js/app.js?v=7.0"></script>
 </body>
 </html>

@@ -185,7 +185,7 @@ h1, h2, h3, h4, .logo-title {
 }
 
 /* Fixed Bottom Mobile App Navigation Bar */
-.bottom-app-nav {
+.bottom-app-nav, .main-nav {
   position: fixed;
   bottom: 0;
   left: 0;
@@ -203,7 +203,7 @@ h1, h2, h3, h4, .logo-title {
   z-index: 1000;
 }
 
-.bottom-app-nav .nav-btn {
+.bottom-app-nav .nav-btn, .main-nav .nav-btn {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -220,11 +220,11 @@ h1, h2, h3, h4, .logo-title {
   transition: all var(--transition-fast);
 }
 
-.bottom-app-nav .nav-btn i {
+.bottom-app-nav .nav-btn i, .main-nav .nav-btn i {
   font-size: 1.15rem;
 }
 
-.bottom-app-nav .nav-btn.active {
+.bottom-app-nav .nav-btn.active, .main-nav .nav-btn.active {
   color: var(--carbs-color);
   background-color: rgba(16, 185, 129, 0.12);
 }
@@ -1658,7 +1658,7 @@ h1, h2, h3, h4, .logo-title {
   }
 
   /* Fixed Mobile Navigation Bar at bottom */
-  .bottom-app-nav {
+  .bottom-app-nav, .main-nav {
     position: fixed;
     bottom: 0;
     left: 0;

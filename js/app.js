@@ -1112,27 +1112,79 @@ function renderNutritionChart() {
 // ==========================================
 
 function initModals() {
-  function attachCalorieCalculator(calId, pId, fId, cId) {
+  function attachMacroCalculator(gramsId, calId, pId, fId, cId) {
+    const gInput = document.getElementById(gramsId);
     const calInput = document.getElementById(calId);
     const pInput = document.getElementById(pId);
     const fInput = document.getElementById(fId);
     const cInput = document.getElementById(cId);
     if (!calInput || !pInput || !fInput || !cInput) return;
 
-    const calculate = () => {
-      const p = parseFloat(pInput.value) || 0;
-      const f = parseFloat(fInput.value) || 0;
-      const c = parseFloat(cInput.value) || 0;
-      calInput.value = Math.round(p * 4 + f * 9 + c * 4);
+    let baseG = parseFloat(gInput?.value) || 100;
+    let baseCal = parseFloat(calInput.value) || 0;
+    let baseP = parseFloat(pInput.value) || 0;
+    let baseF = parseFloat(fInput.value) || 0;
+    let baseC = parseFloat(cInput.value) || 0;
+
+    const updateBaseFromPFC = () => {
+      baseP = parseFloat(pInput.value) || 0;
+      baseF = parseFloat(fInput.value) || 0;
+      baseC = parseFloat(cInput.value) || 0;
+      baseCal = Math.round(baseP * 4 + baseF * 9 + baseC * 4);
+      calInput.value = baseCal;
+      if (gInput) {
+        if (!gInput.value) gInput.value = 100;
+        baseG = parseFloat(gInput.value) || 100;
+      }
     };
 
-    pInput.addEventListener('input', calculate);
-    fInput.addEventListener('input', calculate);
-    cInput.addEventListener('input', calculate);
+    const scaleFromBase = (ratio) => {
+      if (ratio < 0 || !isFinite(ratio)) return;
+      pInput.value = (baseP * ratio).toFixed(1);
+      fInput.value = (baseF * ratio).toFixed(1);
+      cInput.value = (baseC * ratio).toFixed(1);
+    };
+
+    pInput.addEventListener('input', updateBaseFromPFC);
+    fInput.addEventListener('input', updateBaseFromPFC);
+    cInput.addEventListener('input', updateBaseFromPFC);
+
+    calInput.addEventListener('input', () => {
+      const newCal = parseFloat(calInput.value) || 0;
+      if (baseCal > 0) {
+        const ratio = newCal / baseCal;
+        scaleFromBase(ratio);
+        if (gInput && baseG > 0) {
+          gInput.value = Math.round(baseG * ratio);
+        }
+      }
+    });
+
+    if (gInput) {
+      gInput.addEventListener('input', () => {
+        const newG = parseFloat(gInput.value) || 0;
+        if (baseG > 0) {
+          const ratio = newG / baseG;
+          scaleFromBase(ratio);
+          calInput.value = Math.round(baseCal * ratio);
+        }
+      });
+    }
+
+    const resetBase = () => {
+      baseCal = parseFloat(calInput.value) || 0;
+      baseP = parseFloat(pInput.value) || 0;
+      baseF = parseFloat(fInput.value) || 0;
+      baseC = parseFloat(cInput.value) || 0;
+      if (gInput) baseG = parseFloat(gInput.value) || 100;
+    };
+
+    calInput.addEventListener('change', resetBase);
+    if (gInput) gInput.addEventListener('change', resetBase);
   }
 
-  attachCalorieCalculator('customMealCal', 'customMealP', 'customMealF', 'customMealC');
-  attachCalorieCalculator('tplCalInput', 'tplPInput', 'tplFInput', 'tplCInput');
+  attachMacroCalculator('customMealGrams', 'customMealCal', 'customMealP', 'customMealF', 'customMealC');
+  attachMacroCalculator('tplGramsInput', 'tplCalInput', 'tplPInput', 'tplFInput', 'tplCInput');
 
   // Global Delegate listener for ALL modal close buttons (X, Cancel, Backdrop)
   document.addEventListener('click', (e) => {
@@ -1304,6 +1356,7 @@ function openAddMealModal(category) {
   document.getElementById('unitsValueVal').textContent = '1';
   document.getElementById('tenthsValueVal').textContent = '.0';
   document.getElementById('customMealName').value = '';
+  document.getElementById('customMealGrams').value = '';
   document.getElementById('customMealCal').value = '';
   document.getElementById('customMealP').value = '';
   document.getElementById('customMealF').value = '';
@@ -1338,12 +1391,14 @@ function handleAddMealSubmit() {
       protein: Math.round(tpl.protein * factor * 10) / 10,
       fat: Math.round(tpl.fat * factor * 10) / 10,
       carbs: Math.round(tpl.carbs * factor * 10) / 10,
+      grams: tpl.grams ? Math.round(tpl.grams * factor) : undefined,
       portionFactor: factor
     });
 
   } else {
     // Custom entry
     const name = (document.getElementById('customMealName').value || '').trim();
+    const grams = Number(document.getElementById('customMealGrams').value) || undefined;
     const calories = Number(document.getElementById('customMealCal').value) || 0;
     const protein = Number(document.getElementById('customMealP').value) || 0;
     const fat = Number(document.getElementById('customMealF').value) || 0;
@@ -1357,6 +1412,7 @@ function handleAddMealSubmit() {
     state.addMealLog(state.selectedDate, {
       name,
       category: activeAddMealCategory,
+      grams,
       calories,
       protein,
       fat,
@@ -1383,6 +1439,7 @@ function openTemplateEditModal(tplId = null) {
     idInput.value = tpl.id;
     document.getElementById('tplNameInput').value = tpl.name;
     document.getElementById('tplCategoryInput').value = tpl.category;
+    document.getElementById('tplGramsInput').value = tpl.grams || '';
     document.getElementById('tplCalInput').value = tpl.calories;
     document.getElementById('tplPInput').value = tpl.protein;
     document.getElementById('tplFInput').value = tpl.fat;
@@ -1392,6 +1449,7 @@ function openTemplateEditModal(tplId = null) {
     idInput.value = '';
     document.getElementById('tplNameInput').value = '';
     document.getElementById('tplCategoryInput').value = 'breakfast';
+    document.getElementById('tplGramsInput').value = '';
     document.getElementById('tplCalInput').value = '';
     document.getElementById('tplPInput').value = '';
     document.getElementById('tplFInput').value = '';
@@ -1405,6 +1463,7 @@ function handleSaveTemplateSubmit() {
   const id = document.getElementById('editTemplateId').value;
   const name = (document.getElementById('tplNameInput').value || '').trim();
   const category = document.getElementById('tplCategoryInput').value;
+  const grams = Number(document.getElementById('tplGramsInput').value) || undefined;
   const calories = Number(document.getElementById('tplCalInput').value) || 0;
   const protein = Number(document.getElementById('tplPInput').value) || 0;
   const fat = Number(document.getElementById('tplFInput').value) || 0;
@@ -1416,10 +1475,10 @@ function handleSaveTemplateSubmit() {
   }
 
   if (id) {
-    state.updateTemplate(id, { name, category, calories, protein, fat, carbs });
+    state.updateTemplate(id, { name, category, grams, calories, protein, fat, carbs });
     showToast('Шаблон обновлен!', 'success');
   } else {
-    state.addTemplate({ name, category, calories, protein, fat, carbs });
+    state.addTemplate({ name, category, grams, calories, protein, fat, carbs });
     showToast('Новый шаблон сохранен!', 'success');
   }
 

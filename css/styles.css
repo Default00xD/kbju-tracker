@@ -190,15 +190,17 @@ h1, h2, h3, h4, .logo-title {
   bottom: 0;
   left: 0;
   right: 0;
+  height: 64px;
   background: var(--bg-glass);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-top: 1px solid var(--border-color);
   box-shadow: var(--shadow-sm), var(--glass-highlight);
-  padding: 0.5rem 1rem;
+  padding: 0 0.5rem;
   display: flex;
+  align-items: center;
   justify-content: space-around;
-  z-index: 100;
+  z-index: 1000;
 }
 
 .bottom-app-nav .nav-btn {
@@ -1656,18 +1658,20 @@ h1, h2, h3, h4, .logo-title {
   }
 
   /* Fixed Mobile Navigation Bar at bottom */
-  .main-nav {
+  .bottom-app-nav {
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
-    z-index: 999;
+    height: 64px;
+    z-index: 1000;
     border-radius: 0;
     border-top: 1px solid var(--border-color);
     background: var(--bg-glass);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    padding: 0.5rem 0.25rem;
+    padding: 0 0.25rem;
+    align-items: center;
     justify-content: space-around;
     box-shadow: var(--shadow-sm), var(--glass-highlight);
   }

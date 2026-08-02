@@ -916,7 +916,7 @@ function calculatePastDaysAverage(daysCount) {
   let totalCal = 0, totalP = 0, totalF = 0, totalC = 0;
   let activeDays = 0;
 
-  for (let i = 0; i < daysCount; i++) {
+  for (let i = 1; i <= daysCount; i++) {
     const d = new Date(today);
     d.setDate(d.getDate() - i);
     const isoStr = state.formatDateIso(d);

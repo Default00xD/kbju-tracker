@@ -112,7 +112,7 @@ h1, h2, h3, h4, .logo-title {
   min-height: 100vh;
   max-width: 1280px;
   margin: 0 auto;
-  padding: 0 1.25rem 5.5rem 1.25rem;
+  padding: 0 1.25rem 1.25rem 1.25rem;
 }
 
 .app-header {
@@ -184,26 +184,23 @@ h1, h2, h3, h4, .logo-title {
   gap: 0.5rem;
 }
 
-/* Fixed Bottom Mobile App Navigation Bar */
-.bottom-app-nav, .main-nav {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
+/* Top Tab Navigation */
+.top-tab-nav {
   height: 64px;
   background: var(--bg-glass);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border-top: 1px solid var(--border-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm), var(--glass-highlight);
   padding: 0 0.5rem;
+  margin-bottom: 1.25rem;
   display: flex;
   align-items: center;
   justify-content: space-around;
-  z-index: 1000;
 }
 
-.bottom-app-nav .nav-btn, .main-nav .nav-btn {
+.top-tab-nav .nav-btn {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -220,11 +217,11 @@ h1, h2, h3, h4, .logo-title {
   transition: all var(--transition-fast);
 }
 
-.bottom-app-nav .nav-btn i, .main-nav .nav-btn i {
+.top-tab-nav .nav-btn i {
   font-size: 1.15rem;
 }
 
-.bottom-app-nav .nav-btn.active, .main-nav .nav-btn.active {
+.top-tab-nav .nav-btn.active {
   color: var(--carbs-color);
   background-color: rgba(16, 185, 129, 0.12);
 }
@@ -1635,7 +1632,7 @@ h1, h2, h3, h4, .logo-title {
 
 @media (max-width: 768px) {
   .app-container {
-    padding: 0 0.75rem 5rem 0.75rem;
+    padding: 0 0.75rem 1.25rem 0.75rem;
   }
   
   .app-header {
@@ -1657,16 +1654,10 @@ h1, h2, h3, h4, .logo-title {
     margin-left: auto;
   }
 
-  /* Fixed Mobile Navigation Bar at bottom */
-  .bottom-app-nav, .main-nav {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
+  /* Mobile Top Tab Navigation Adjustments */
+  .top-tab-nav {
     height: 64px;
-    z-index: 1000;
-    border-radius: 0;
-    border-top: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
     background: var(--bg-glass);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);

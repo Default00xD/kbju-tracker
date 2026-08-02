@@ -22,6 +22,26 @@
     <!-- Main Container Content -->
     <main class="app-body">
       
+      <!-- Top Tab Navigation -->
+      <nav class="top-tab-nav">
+        <button class="nav-btn active" data-tab="dashboard">
+          <i class="fa-solid fa-book-open"></i>
+          <span>Дневник</span>
+        </button>
+        <button class="nav-btn" data-tab="templates">
+          <i class="fa-solid fa-utensils"></i>
+          <span>Шаблоны</span>
+        </button>
+        <button class="nav-btn" data-tab="weight">
+          <i class="fa-solid fa-weight-scale"></i>
+          <span>Вес</span>
+        </button>
+        <button class="nav-btn" data-tab="calendar">
+          <i class="fa-solid fa-chart-line"></i>
+          <span>Статистика</span>
+        </button>
+      </nav>
+
       <!-- TAB 1: DASHBOARD (ГЛАВНАЯ / ДНЕВНИК) -->
       <section id="tab-dashboard" class="tab-page active">
         <!-- Compact Date Bar -->
@@ -701,27 +721,7 @@
   <!-- Toast Notification Container -->
   <div id="toastContainer" class="toast-container"></div>
 
-  <!-- Fixed Bottom App Navigation Bar -->
-  <nav class="bottom-app-nav">
-    <button class="nav-btn active" data-tab="dashboard">
-      <i class="fa-solid fa-book-open"></i>
-      <span>Дневник</span>
-    </button>
-    <button class="nav-btn" data-tab="templates">
-      <i class="fa-solid fa-utensils"></i>
-      <span>Шаблоны</span>
-    </button>
-    <button class="nav-btn" data-tab="weight">
-      <i class="fa-solid fa-weight-scale"></i>
-      <span>Вес</span>
-    </button>
-    <button class="nav-btn" data-tab="calendar">
-      <i class="fa-solid fa-chart-line"></i>
-      <span>Статистика</span>
-    </button>
-  </nav>
-
   <!-- JavaScript App Logic -->
-  <script src="js/app.js?v=17.1"></script>
+  <script src="js/app.js?v=17.5"></script>
 </body>
 </html>
